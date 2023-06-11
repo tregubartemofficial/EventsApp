@@ -27,7 +27,6 @@ const ListItems = () => {
           <Stack
             direction="row"
             sx={{
-              borderBottom: "0.2rem solid rgb(231, 234, 237)",
               width: "100%",
             }}
           >
@@ -53,7 +52,7 @@ const ListItems = () => {
               p: "1rem 0",
             }}
           >
-            <AvatarGroup max={5}>
+            <AvatarGroup sx={{marginLeft: 2}} max={5}>
               {event.attendees.map((attender) => (
                 <Avatar
                   alt={attender.name}
@@ -63,7 +62,13 @@ const ListItems = () => {
               ))}
             </AvatarGroup>
           </Stack>
-          <Stack direction="row" alignItems="space-between" sx={{ w: "100%" }}>
+          <Stack
+            flexDirection="row"
+            flexWrap="wrap"
+            justifyContent="end"
+            alignItems="space-between"
+            sx={{ w: "100%" }}
+          >
             <ListItemText primary={event.description} />
             <Button variant="contained">View</Button>
           </Stack>
