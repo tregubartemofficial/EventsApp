@@ -70,7 +70,7 @@ const ListItems = () => {
             sx={{ w: "100%" }}
           >
             <ListItemText primary={event.description} />
-            <Button variant="contained">View</Button>
+            <Button variant="contained">Edit</Button>
           </Stack>
         </ListItem>
       ))}
