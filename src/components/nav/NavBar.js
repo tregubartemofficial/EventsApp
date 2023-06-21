@@ -1,11 +1,13 @@
 import {
   AppBar,
+  Avatar,
   Box,
   Button,
   IconButton,
   Menu,
   MenuItem,
   Toolbar,
+  Tooltip,
   Typography,
   styled,
 } from "@mui/material";
@@ -13,49 +15,55 @@ import MenuIcon from "@mui/icons-material/Menu";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-const StyledTitle = styled(Typography)`
-  mr: 2;
-  display: { xs: "flex", md: "none" };
-  flexGrow: 1;
-  fontFamily: "monospace";
-  fontWeight: 700;
-  letterSpacing: ".3rem";
-  color: "inherit";
-  textDecoration: "none";
-`;
-        
-const StyledLink = styled(Button)``;
+const StyledTitle = styled(Typography)({
+  mr: 2,
+  flexGrow: 1,
+  fontFamily: "monospace",
+  fontWeight: 700,
+  flexWrap: "nowrap",
+  letterSpacing: ".3rem",
+  color: "inherit",
+  textDecoration: "none",
+});
+
+const StyledBtn = styled(Button)({ my: 2, color: "white", display: "block" });
 
 const NavBar = ({ setShowForm }) => {
   const [anchorElNav, setAnchorElNav] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+  
+  const handleAuthentication = () => setLoggedIn(!loggedIn);
+
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
 
-  const handleCloseNavMenu = (event) => {
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
   return (
     <AppBar position="static">
       <Toolbar sx={{ justifyContent: "space-between" }}>
-        <Typography
+        <StyledTitle
           variant="h6"
-          noWrap
-          component="a"
-          href="/"
+          component={Link}
+          to="./events"
           sx={{
-            mr: 2,
             display: { xs: "none", md: "flex" },
-            fontFamily: "monospace",
-            fontWeight: 700,
-            letterSpacing: ".3rem",
-            color: "inherit",
-            textDecoration: "none",
           }}
         >
           EVENTAPP
-        </Typography>
+        </StyledTitle>
         <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
           <IconButton
             size="large"
@@ -98,65 +106,89 @@ const NavBar = ({ setShowForm }) => {
             <MenuItem component={Link} to="/" onClick={handleCloseNavMenu}>
               Сreate Event
             </MenuItem>
-            <MenuItem component={Link} to="/" onClick={handleCloseNavMenu}>
-              Login
-            </MenuItem>
-            <MenuItem component={Link} to="/" onClick={handleCloseNavMenu}>
-              Register
-            </MenuItem>
+            {!loggedIn && (
+              <MenuItem component={Link} to="/" onClick={handleCloseNavMenu}>
+                Login
+              </MenuItem>
+            )}
+            {!loggedIn && (
+              <MenuItem component={Link} to="/" onClick={handleCloseNavMenu}>
+                Register
+              </MenuItem>
+            )}
           </Menu>
         </Box>
-        <Typography
+        <StyledTitle
           variant="h5"
-          noWrap
-          component="a"
-          href=""
+          component={Link}
+          to="./events"
           sx={{
-            mr: 2,
             display: { xs: "flex", md: "none" },
-            flexGrow: 1,
-            fontFamily: "monospace",
-            fontWeight: 700,
-            letterSpacing: ".3rem",
-            color: "inherit",
-            textDecoration: "none",
           }}
         >
           EVENTAPP
-        </Typography>
+        </StyledTitle>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          <Button
-            component={Link}
-            to="/events"
-            onClick={handleCloseNavMenu}
-            sx={{ my: 2, color: "white", display: "block" }}
-          >
+          <StyledBtn component={Link} to="/events" onClick={handleCloseNavMenu}>
             EVENTS
-          </Button>
-          <Button
+          </StyledBtn>
+          <StyledBtn
             component={Link}
             to="/events/:id"
             onClick={handleCloseNavMenu}
-            sx={{ my: 2, color: "white", display: "block" }}
           >
             CREATE EVENT
-          </Button>
-          <Button
-            component={Link}
-            to="/createEvent"
-            onClick={handleCloseNavMenu}
-            sx={{ my: 2, color: "white", display: "block" }}
-          >
-            LOGIN
-          </Button>
-          <Button
-            component={Link}
-            onClick={handleCloseNavMenu}
-            sx={{ my: 2, color: "white", display: "block" }}
-          >
-            REGISTER
-          </Button>
+          </StyledBtn>
+          {!loggedIn && (
+            <StyledBtn
+              component={Link}
+              to="/createEvent"
+              onClick={handleCloseNavMenu}
+            >
+              LOGIN
+            </StyledBtn>
+          )}
+          {!loggedIn && (
+            <StyledBtn component={Link} onClick={handleCloseNavMenu}>
+              REGISTER
+            </StyledBtn>
+          )}
         </Box>
+        {loggedIn && (
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="User profile">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              <MenuItem onClick={handleCloseUserMenu}>
+                <Typography textAlign="center">Create Event</Typography>
+              </MenuItem>
+              <MenuItem>
+                <Typography textAlign="center">My profile</Typography>
+              </MenuItem>
+              <MenuItem>
+                <Typography textAlign="center">Sign Out</Typography>
+              </MenuItem>
+            </Menu>
+          </Box>
+        )}
       </Toolbar>
     </AppBar>
   );

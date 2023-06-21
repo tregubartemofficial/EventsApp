@@ -12,9 +12,11 @@ function App() {
   return (
     <>
       <NavBar setShowForm={setShowForm} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
       <Container>
         <Routes>
-          <Route path="/" element={<Home />} />
           <Route
             path="/events"
             element={<Main showForm={showForm} setShowForm={setShowForm} />}
