@@ -1,17 +1,16 @@
 import { Container } from "@mui/material";
 import NavBar from "./components/nav/NavBar";
 import Main from "./components/pages/Main";
-import { useState } from "react";
 import { Route, Routes } from "react-router";
 import EventForm from "./components/eventForm/EventForm";
 import Home from "./components/pages/Home";
+import EventDetailed from './components/pages/EventDetailed'
 
 function App() {
-  const [showForm, setShowForm] = useState(false);
 
   return (
     <>
-      <NavBar setShowForm={setShowForm} />
+      <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
       </Routes>
@@ -19,10 +18,10 @@ function App() {
         <Routes>
           <Route
             path="/events"
-            element={<Main showForm={showForm} setShowForm={setShowForm} />}
+            element={<Main />}
           />
-          <Route path="/events/:id" element={<Home />} />
-          <Route path="/createEvent" element={EventForm} />
+          <Route path="/events/:id" element={<EventDetailed />} />
+          <Route path="/createEvent" element={<EventForm />} />
         </Routes>
       </Container>
     </>

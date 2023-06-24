@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -28,12 +28,17 @@ const StyledTitle = styled(Typography)({
 
 const StyledBtn = styled(Button)({ my: 2, color: "white", display: "block" });
 
-const NavBar = ({ setShowForm }) => {
+const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
-  
-  const handleAuthentication = () => setLoggedIn(!loggedIn);
+  const navigate = useNavigate()
+
+  const handleLoggingIn = () => setLoggedIn(true);
+  const handleLoggingOut = () => {
+    setLoggedIn(false);
+    navigate('/')
+  };
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -107,12 +112,22 @@ const NavBar = ({ setShowForm }) => {
               Сreate Event
             </MenuItem>
             {!loggedIn && (
-              <MenuItem component={Link} to="/" onClick={handleCloseNavMenu}>
+              <MenuItem
+                onClick={() => {
+                  handleCloseNavMenu();
+                  handleLoggingIn();
+                }}
+              >
                 Login
               </MenuItem>
             )}
             {!loggedIn && (
-              <MenuItem component={Link} to="/" onClick={handleCloseNavMenu}>
+              <MenuItem
+                onClick={() => {
+                  handleCloseNavMenu();
+                  handleLoggingOut();
+                }}
+              >
                 Register
               </MenuItem>
             )}
@@ -129,29 +144,15 @@ const NavBar = ({ setShowForm }) => {
           EVENTAPP
         </StyledTitle>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          <StyledBtn component={Link} to="/events" onClick={handleCloseNavMenu}>
+          <StyledBtn component={Link} to="/events">
             EVENTS
           </StyledBtn>
-          <StyledBtn
-            component={Link}
-            to="/events/:id"
-            onClick={handleCloseNavMenu}
-          >
+          <StyledBtn component={Link} to="/events/:id">
             CREATE EVENT
           </StyledBtn>
+          {!loggedIn && <StyledBtn onClick={handleLoggingIn}>LOGIN</StyledBtn>}
           {!loggedIn && (
-            <StyledBtn
-              component={Link}
-              to="/createEvent"
-              onClick={handleCloseNavMenu}
-            >
-              LOGIN
-            </StyledBtn>
-          )}
-          {!loggedIn && (
-            <StyledBtn component={Link} onClick={handleCloseNavMenu}>
-              REGISTER
-            </StyledBtn>
+            <StyledBtn onClick={handleCloseNavMenu}>REGISTER</StyledBtn>
           )}
         </Box>
         {loggedIn && (
@@ -180,10 +181,15 @@ const NavBar = ({ setShowForm }) => {
               <MenuItem onClick={handleCloseUserMenu}>
                 <Typography textAlign="center">Create Event</Typography>
               </MenuItem>
-              <MenuItem>
+              <MenuItem onClick={handleCloseUserMenu}>
                 <Typography textAlign="center">My profile</Typography>
               </MenuItem>
-              <MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleCloseUserMenu();
+                  handleLoggingOut();
+                }}
+              >
                 <Typography textAlign="center">Sign Out</Typography>
               </MenuItem>
             </Menu>

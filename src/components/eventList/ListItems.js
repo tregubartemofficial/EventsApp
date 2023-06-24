@@ -13,13 +13,13 @@ import {
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { events } from "../../sampleData";
+import { Link } from "react-router-dom";
 
 const ListItems = () => {
   return (
-    <List sx={{ width: "100%", maxWidth: 360 }}>
+    <List sx={{ width: "100%", maxWidth: 500 }}>
       {events.map((event) => (
         <ListItem
-          alignItems="flex-start"
           sx={{ flexDirection: "column", bgcolor: "white", marginBottom: 1 }}
           key={event.id}
           divider={true}
@@ -52,7 +52,7 @@ const ListItems = () => {
               p: "1rem 0",
             }}
           >
-            <AvatarGroup sx={{marginLeft: 2}} max={5}>
+            <AvatarGroup sx={{ marginLeft: 2 }} max={5}>
               {event.attendees.map((attender) => (
                 <Avatar
                   alt={attender.name}
@@ -70,7 +70,12 @@ const ListItems = () => {
             sx={{ w: "100%" }}
           >
             <ListItemText primary={event.description} />
-            <Button variant="contained">Edit</Button>
+            <Button variant="contained" sx={{ m: 1 }} component={Link} to="/events/:id">
+              View
+            </Button>
+            <Button variant="contained" color="error" sx={{ m: 1 }}>
+              Delete
+            </Button>
           </Stack>
         </ListItem>
       ))}

@@ -1,8 +1,8 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Button, TextField } from "@mui/material";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { Button, Stack, TextField } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -13,7 +13,7 @@ const validationSchema = yup.object({
   date: yup.string().required("Date is required"),
 });
 
-const EventForm = ({ setShowForm }) => {
+const EventForm = () => {
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues: {
@@ -32,7 +32,6 @@ const EventForm = ({ setShowForm }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <KeyboardArrowDownIcon onClick={() => setShowForm(false)} />
       <TextField
         id="title"
         name="title"
@@ -99,9 +98,20 @@ const EventForm = ({ setShowForm }) => {
         error={touched.date && Boolean(errors.date)}
         helperText={touched.date && errors.date}
       />
-      <Button type="submit" variant="contained">
-        Submit
-      </Button>
+      <Stack direction="row" justifyContent='space-evenly'>
+        <Button type="submit" variant="contained" sx={{ width: "40%" }}>
+          Submit
+        </Button>
+        <Button
+          component={Link}
+          to="/events"
+          variant="contained"
+          color="error"
+          sx={{ width: "40%" }}
+        >
+          Cancel
+        </Button>
+      </Stack>
     </form>
   );
 };

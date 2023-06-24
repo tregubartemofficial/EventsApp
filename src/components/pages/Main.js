@@ -1,9 +1,9 @@
 import { Stack } from "@mui/material";
 import React from "react";
 import ListItems from "../eventList/ListItems";
-import EventForm from "../eventForm/EventForm";
+import EventFilter from "../eventList/EventFilter";
 
-const Main = ({ showForm, setShowForm }) => {
+const Main = () => {
   return (
     <main>
       <Stack
@@ -12,7 +12,7 @@ const Main = ({ showForm, setShowForm }) => {
         alignItems="center"
       >
         <ListItems />
-        {showForm && <EventForm setShowForm={setShowForm} />}
+        <EventFilter/>
       </Stack>
     </main>
   );
