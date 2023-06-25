@@ -9,13 +9,17 @@ import {
   Button,
   AvatarGroup,
 } from "@mui/material";
-
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import { events } from "../../sampleData";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {deleteEvent} from '../../app/features/event/eventReducer'
 
 const ListItems = () => {
+  const { events } = useSelector((state) => state.events);
+
+  const dispatch = useDispatch();
+
   return (
     <List sx={{ width: "100%", maxWidth: 500 }}>
       {events.map((event) => (
@@ -70,10 +74,20 @@ const ListItems = () => {
             sx={{ w: "100%" }}
           >
             <ListItemText primary={event.description} />
-            <Button variant="contained" sx={{ m: 1 }} component={Link} to="/events/:id">
+            <Button
+              variant="contained"
+              sx={{ m: 1 }}
+              component={Link}
+              to={`/events/${event.id}`}
+            >
               View
             </Button>
-            <Button variant="contained" color="error" sx={{ m: 1 }}>
+            <Button
+              onClick={() => dispatch(deleteEvent(event.id))}
+              variant="contained"
+              color="error"
+              sx={{ m: 1 }}
+            >
               Delete
             </Button>
           </Stack>

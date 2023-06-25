@@ -14,7 +14,7 @@ const EventDetailedChat = () => {
       >
         {[0, 1, 2, 3].map((value) => {
           return (
-            <ListItem alignItems="flex-start">
+            <ListItem key={value} alignItems="flex-start">
               <ListItemAvatar>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
               </ListItemAvatar>
@@ -28,7 +28,7 @@ const EventDetailedChat = () => {
                       variant="body2"
                       color="text.primary"
                     >
-                      TEXT 
+                      TEXT
                     </Typography>
                     {" TIME "}
                   </>

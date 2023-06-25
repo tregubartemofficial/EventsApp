@@ -18,7 +18,7 @@ const StyledBox = styled(Box)({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  background: `linear-gradient(0deg, #a852ee, #00f6ff, #23a6d5, #1976d2)`,
+  background: `linear-gradient(0deg, #c8ee52d1, #ffd100, #23a6d5, #1976d2);`,
   animation: `${gradientAnimation} 1s ease infinite`,
 });
 
