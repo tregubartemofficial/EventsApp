@@ -1,9 +1,16 @@
-import { Button, Card, CardActions, CardContent, Typography } from '@mui/material'
-import { grey } from '@mui/material/colors';
-import React from 'react'
-import { Link } from 'react-router-dom';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { grey } from "@mui/material/colors";
+import React from "react";
+import { Link } from "react-router-dom";
 
-const EventDetailedHeader = ({event}) => {
+const EventDetailedHeader = ({ event }) => {
   console.log(event);
   return (
     <Card sx={{ minWidth: 400 }}>
@@ -14,24 +21,27 @@ const EventDetailedHeader = ({event}) => {
         </Typography>
         <Typography variant="body2">Hosted by {event.hostedBy}</Typography>
       </CardContent>
-      <CardActions>
-        <Button disabled={true} size="small" variant="contained">
+      <CardActions sx={{ justifyContent: "space-between" }}>
+        <Button disabled size="small" variant="contained">
           Cancel my place
         </Button>
-        <Button size="small" variant="contained">
-          Join this event
-        </Button>
-        <Button
-          component={Link}
-          to={`/manage/`}
-          size="small"
-          variant="contained"
-        >
-          Manage event
-        </Button>
+        <Stack flexDirection="row">
+          <Button size="small" variant="contained" sx={{ margin: "0 0 0 5px" }}>
+            Join this event
+          </Button>
+          <Button
+            component={Link}
+            to={`/manage/${event.id}`}
+            size="small"
+            variant="contained"
+            sx={{ margin: "0 0 0 5px" }}
+          >
+            Manage event
+          </Button>
+        </Stack>
       </CardActions>
     </Card>
   );
-}
+};
 
-export default EventDetailedHeader
+export default EventDetailedHeader;

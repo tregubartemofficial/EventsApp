@@ -16,12 +16,10 @@ function App() {
       </Routes>
       <Container>
         <Routes>
-          <Route
-            path="/events"
-            element={<Main />}
-          />
+          <Route path="/events" element={<Main />} />
           <Route path="/events/:id" element={<EventDetailed />} />
           <Route path="/createEvent" element={<EventForm />} />
+          <Route path="/manage/:id" element={<EventForm />} />
         </Routes>
       </Container>
     </>

@@ -2,7 +2,8 @@ import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Button, Stack, TextField } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -14,15 +15,20 @@ const validationSchema = yup.object({
 });
 
 const EventForm = () => {
+  const { id } = useParams();
+  const event = useSelector((state) =>
+    state.events.events.find((e) => e.id === id)
+  );
+  console.log();
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues: {
-        title: "",
-        category: "",
-        description: "",
-        city: "",
-        street: "",
-        date: "",
+        title: event ? event.title : "",
+        category: event ? event.category : "",
+        description: event ? event.description : "",
+        city: event ? event.city : "",
+        street: event ? event.city.address : "",
+        date: event ? event.date.toISOString().slice(0, 10) : "",
       },
       onSubmit: (values) => {
         console.log(JSON.stringify(values));
@@ -98,7 +104,7 @@ const EventForm = () => {
         error={touched.date && Boolean(errors.date)}
         helperText={touched.date && errors.date}
       />
-      <Stack direction="row" justifyContent='space-evenly'>
+      <Stack direction="row" justifyContent="space-evenly">
         <Button type="submit" variant="contained" sx={{ width: "40%" }}>
           Submit
         </Button>
