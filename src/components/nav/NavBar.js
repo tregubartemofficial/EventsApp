@@ -6,6 +6,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Stack,
   Toolbar,
   Tooltip,
   Typography,
@@ -14,6 +15,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -25,7 +27,6 @@ const StyledTitle = styled(Typography)({
   color: "inherit",
   textDecoration: "none",
 });
-
 const StyledBtn = styled(Button)({ my: 2, color: "white", display: "block" });
 
 const NavBar = () => {
@@ -69,17 +70,20 @@ const NavBar = () => {
         >
           EVENTAPP
         </StyledTitle>
+        {/* PHONE NAVIGATION */}
         <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-          <IconButton
-            size="large"
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleOpenNavMenu}
-            color="inherit"
-          >
-            <MenuIcon />
-          </IconButton>
+          <motion.div whileTap={{ scale: 0.85 }}>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleOpenNavMenu}
+              color="inherit"
+            >
+              <MenuIcon />
+            </IconButton>
+          </motion.div>
           <Menu
             id="menu-appbar"
             anchorEl={anchorElNav}
@@ -108,7 +112,11 @@ const NavBar = () => {
             >
               Events
             </MenuItem>
-            <MenuItem component={Link} to="/" onClick={handleCloseNavMenu}>
+            <MenuItem
+              component={Link}
+              to="/createEvent"
+              onClick={handleCloseNavMenu}
+            >
               Сreate Event
             </MenuItem>
             {!loggedIn && (
@@ -143,16 +151,21 @@ const NavBar = () => {
         >
           EVENTAPP
         </StyledTitle>
-        <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          <StyledBtn component={Link} to="/events">
-            EVENTS
-          </StyledBtn>
-          <StyledBtn component={Link} to="/events/:id">
-            CREATE EVENT
-          </StyledBtn>
-          {!loggedIn && <StyledBtn onClick={handleLoggingIn}>LOGIN</StyledBtn>}
+        {/* PC NAVIGATION */}
+        <Box justifyContent='space-between' sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Stack flexDirection="row">
+            <StyledBtn component={Link} to="/events">
+              EVENTS
+            </StyledBtn>
+            <StyledBtn component={Link} to="/createEvent">
+              CREATE EVENT
+            </StyledBtn>
+          </Stack>
           {!loggedIn && (
-            <StyledBtn onClick={handleCloseNavMenu}>REGISTER</StyledBtn>
+            <Stack flexDirection="row">
+              <StyledBtn onClick={handleLoggingIn}>LOGIN</StyledBtn>
+              <StyledBtn onClick={handleCloseNavMenu}>REGISTER</StyledBtn>
+            </Stack>
           )}
         </Box>
         {loggedIn && (

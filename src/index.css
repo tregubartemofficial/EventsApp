@@ -10,3 +10,14 @@ form {
     display: flex;
     flex-direction: column;
 }
+
+::-webkit-scrollbar {
+    height: 5px;
+    width: 6px;
+    background-color: rgb(231, 234, 237);
+    -webkit-border-radius: 1ex
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #1976d2;
+}

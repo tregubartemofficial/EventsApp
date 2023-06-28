@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Button, Stack, TextField } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { addEvent, updateEvent } from "../../app/features/event/eventReducer";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -15,26 +16,72 @@ const validationSchema = yup.object({
 });
 
 const EventForm = () => {
+  const dispacth = useDispatch
   const { id } = useParams();
   const event = useSelector((state) =>
-    state.events.events.find((e) => e.id === id)
+    state.events?.events.find((e) => e.id === id)
   );
-  console.log();
+
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues: {
-        title: event ? event.title : "",
-        category: event ? event.category : "",
-        description: event ? event.description : "",
-        city: event ? event.city : "",
-        street: event ? event.city.address : "",
-        date: event ? event.date.toISOString().slice(0, 10) : "",
+        title: event?.title || "",
+        category: event?.category || "",
+        description: event?.description || "",
+        city: event?.city || "",
+        street: event?.city?.address || "",
+        date: event?.date?.toISOString().slice(0, 10) || "",
       },
       onSubmit: (values) => {
-        console.log(JSON.stringify(values));
+        if (event) {
+          dispacth(updateEvent({ ...event, ...values }));
+        } 
+        else {
+          dispacth(addEvent({...values, id: Math.random(), hostedBy: 'Bob', attendees: [],  hostPhotoURL: '' }))
+        }
       },
       validationSchema: validationSchema,
     });
+
+// Reseting Fields 
+  useEffect(() => {
+    handleChange({
+      target: {
+        name: "title",
+        value: event?.title || "",
+      },
+    });
+    handleChange({
+      target: {
+        name: "category",
+        value: event?.category || "",
+      },
+    });
+    handleChange({
+      target: {
+        name: "description",
+        value: event?.description || "",
+      },
+    });
+    handleChange({
+      target: {
+        name: "city",
+        value: event?.city || "",
+      },
+    });
+    handleChange({
+      target: {
+        name: "street",
+        value: event?.city?.address || "",
+      },
+    });
+    handleChange({
+      target: {
+        name: "date",
+        value: event?.date?.toISOString().slice(0, 10) || "",
+      },
+    });
+  }, [handleChange, event]);
 
   return (
     <form onSubmit={handleSubmit}>

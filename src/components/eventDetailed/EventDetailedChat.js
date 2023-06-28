@@ -16,7 +16,7 @@ const EventDetailedChat = () => {
           return (
             <ListItem key={value} alignItems="flex-start">
               <ListItemAvatar>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                <Avatar alt="Remy Sharp" src="/" />
               </ListItemAvatar>
               <ListItemText
                 primary="NAME"
