@@ -11,12 +11,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const EventDetailedHeader = ({ event }) => {
+  const deserializedDate = new Date(event.date);
+
   return (
     <Card>
-      <CardContent sx={{ background: grey[600], minHeight: 100, }}>
+      <CardContent sx={{ background: grey[600], minHeight: 100 }}>
         <Typography variant="h5">{event.title}</Typography>
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          {event.date.toUTCString()}
+          {deserializedDate.toUTCString()}
         </Typography>
         <Typography variant="body2">Hosted by {event.hostedBy}</Typography>
       </CardContent>

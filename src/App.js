@@ -5,11 +5,25 @@ import { Route, Routes } from "react-router";
 import EventForm from "./components/eventForm/EventForm";
 import Home from "./components/pages/Home";
 import EventDetailed from './components/pages/EventDetailed'
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
+const lightTheme = createTheme({
+  palette: {
+    mode: 'light',
+  },
+});
 
 function App() {
 
   return (
-    <>
+    <ThemeProvider theme={lightTheme}>
+      <CssBaseline />
       <NavBar />
       <Routes>
         <Route index element={<Home />} />
@@ -22,7 +36,7 @@ function App() {
           <Route path="/manage/:id" element={<EventForm />} />
         </Routes>
       </Container>
-    </>
+    </ThemeProvider>
   );
 }
 
