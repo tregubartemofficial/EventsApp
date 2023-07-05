@@ -10,7 +10,6 @@ const EventDetailedChat = () => {
             Chat about this event
           </ListSubheader>
         }
-        sx={{ maxWidth: 360, bgcolor: "background.paper" }}
       >
         {[0, 1, 2, 3].map((value) => {
           return (

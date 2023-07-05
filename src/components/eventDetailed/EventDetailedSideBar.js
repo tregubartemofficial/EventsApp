@@ -19,7 +19,7 @@ const EventDetailedSideBar = ({event}) => {
             {event.attendees.length} People going
           </ListSubheader>
         }
-        sx={{ maxWidth: 360, bgcolor: "background.paper" }}
+        sx={{ minWidth: 360, bgcolor: "background.paper" }}
       >
         {event.attendees.map((attender) => {
           return (

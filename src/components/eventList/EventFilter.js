@@ -1,9 +1,22 @@
-import React from 'react'
+import React from "react";
+import { Button } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { toggleModal } from "../../app/features/modal/modalReducer";
+import TestModal from '../modal/TestModal'
+import Calendar from "react-calendar";
 
 const EventFilter = () => {
-  return (
-    <div>EventFilter</div>
-  )
-}
+  const dispatch = useDispatch();
 
-export default EventFilter
+  return (
+    <div>
+      <Button onClick={() => dispatch(toggleModal("modal1"))}>
+        Open modal
+      </Button>
+      <Calendar/>
+      <TestModal />
+    </div>
+  );
+};
+
+export default EventFilter;

@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Button, Stack, TextField } from "@mui/material";
+import { Autocomplete, Button, Stack, TextField } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addEvent, updateEvent } from "../../app/features/event/eventReducer";
+import PlaceAutocompleteField from "./PlaceAutocompleteField";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -15,14 +16,28 @@ const validationSchema = yup.object({
   date: yup.string().required("Date is required"),
 });
 
+const categoryList = [
+  "Music",
+  "Visual Arts",
+  "Performing Arts",
+  "Film",
+  "Lectures & Books",
+  "Food & Drink",
+  "Festivals & Fairs",
+  "Charities",
+  "Sports & Active Life",
+  "Nightlife",
+  "Kids & Family",
+];
+
 const EventForm = () => {
-  const dispacth = useDispatch
+  const dispacth = useDispatch;
   const { id } = useParams();
   const event = useSelector((state) =>
     state.events?.events.find((e) => e.id === id)
   );
 
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
+  const { values, errors, touched, handleBlur, setFieldValue, handleSubmit } =
     useFormik({
       initialValues: {
         title: event?.title || "",
@@ -35,53 +50,35 @@ const EventForm = () => {
       onSubmit: (values) => {
         if (event) {
           dispacth(updateEvent({ ...event, ...values }));
-        } 
-        else {
-          dispacth(addEvent({...values, id: Math.random(), hostedBy: 'Bob', attendees: [],  hostPhotoURL: '' }))
+        } else {
+          dispacth(
+            addEvent({
+              ...values,
+              id: Math.random(),
+              hostedBy: "Bob",
+              attendees: [],
+              hostPhotoURL: "",
+            })
+          );
         }
       },
       validationSchema: validationSchema,
     });
 
-// Reseting Fields 
+  // Reseting Fields
   useEffect(() => {
-    handleChange({
-      target: {
-        name: "title",
-        value: event?.title || "",
-      },
-    });
-    handleChange({
-      target: {
-        name: "category",
-        value: event?.category || "",
-      },
-    });
-    handleChange({
-      target: {
-        name: "description",
-        value: event?.description || "",
-      },
-    });
-    handleChange({
-      target: {
-        name: "city",
-        value: event?.city || "",
-      },
-    });
-    handleChange({
-      target: {
-        name: "street",
-        value: event?.city?.address || "",
-      },
-    });
-    handleChange({
-      target: {
-        name: "date",
-        value: event?.date?.toISOString().slice(0, 10) || "",
-      },
-    });
-  }, [handleChange, event]);
+    setFieldValue("title", event?.title || "");
+    setFieldValue("category", event?.category || "");
+    setFieldValue("description", event?.description || "");
+    setFieldValue("city", event?.city || "");
+    setFieldValue("street", event?.city?.address || "");
+    setFieldValue("date", event?.date?.toISOString().slice(0, 10) || "");
+  }, [setFieldValue, event]);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFieldValue(name, value);
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -96,16 +93,26 @@ const EventForm = () => {
         error={touched.title && Boolean(errors.title)}
         helperText={touched.title && errors.title}
       />
-      <TextField
-        id="category"
-        name="category"
-        label="Category"
-        margin="normal"
-        value={values.category}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.category && Boolean(errors.category)}
-        helperText={touched.category && errors.category}
+      <Autocomplete
+        autoSelect
+        autoComplete
+        options={categoryList}
+        onChange={(e, value) => {
+          setFieldValue("category", value);
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            id="category"
+            name="category"
+            label="Category"
+            margin="normal"
+            value={values.category}
+            onBlur={handleBlur}
+            error={Boolean(touched.category && errors.category)}
+            helperText={touched.category && errors.category}
+          />
+        )}
       />
       <TextField
         id="description"
@@ -118,24 +125,20 @@ const EventForm = () => {
         error={touched.description && Boolean(errors.description)}
         helperText={touched.description && errors.description}
       />
-      <TextField
+      <PlaceAutocompleteField
         id="city"
         name="city"
         label="City"
-        margin="normal"
-        value={values.city}
-        onChange={handleChange}
         onBlur={handleBlur}
+        setFieldValue={setFieldValue}
         error={touched.city && Boolean(errors.city)}
         helperText={touched.city && errors.city}
       />
-      <TextField
+      <PlaceAutocompleteField
         id="street"
         name="street"
         label="Street"
-        margin="normal"
-        value={values.street}
-        onChange={handleChange}
+        setFieldValue={setFieldValue}
         onBlur={handleBlur}
         error={touched.street && Boolean(errors.street)}
         helperText={touched.street && errors.street}

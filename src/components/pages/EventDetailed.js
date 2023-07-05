@@ -1,17 +1,33 @@
-// import { Box } from '@mui/material'
-import React from 'react'
-import EventDetailedHeader from '../eventDetailed/EventDetailedHeader'
+import React from "react";
+import EventDetailedHeader from "../eventDetailed/EventDetailedHeader";
 import EventDetailedChat from "../eventDetailed/EventDetailedChat";
 import EventDetailedInfo from "../eventDetailed/EventDetailedInfo";
 import EventDetailedSideBar from "../eventDetailed/EventDetailedSideBar";
-import { Stack } from '@mui/material';
-import { useParams } from 'react-router';
-import { useSelector } from 'react-redux';
-
+import { CircularProgress, Stack } from "@mui/material";
+import { useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { useFirestoreDoc } from "../../hooks/useFirestoreDoc";
+import { fetchEvent } from "../../app/features/event/eventReducer";
+import { listenToEventFromFirestore } from "../../app/firebase/firebaseService";
 
 const EventDetailed = () => {
-  const {id} = useParams();
-  const event = useSelector(state => state.events.events.find(e => e.id === id))
+  const { id } = useParams();
+  const dispatch = useDispatch();
+
+  useFirestoreDoc({
+    query: () => listenToEventFromFirestore(id),
+    data: (event) => {
+      dispatch(fetchEvent(event))
+    },
+    deps: id,
+  });
+
+  const event = useSelector((state) =>
+    state.events.events
+  );
+
+
+  if (!event.title) return <CircularProgress />
 
   return (
     <Stack
@@ -29,6 +45,6 @@ const EventDetailed = () => {
       <EventDetailedSideBar event={event} />
     </Stack>
   );
-}
+};
 
-export default EventDetailed
+export default EventDetailed;
