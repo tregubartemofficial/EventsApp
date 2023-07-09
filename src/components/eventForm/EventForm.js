@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Autocomplete, Button, Stack, TextField } from "@mui/material";
-import { Link, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { addEvent, updateEvent } from "../../app/features/event/eventReducer";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import PlaceAutocompleteField from "./PlaceAutocompleteField";
+import {
+  addEventToFirestore,
+  updateEventsInFirestore,
+} from "../../app/firebase/firebaseService";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -30,56 +33,59 @@ const categoryList = [
   "Kids & Family",
 ];
 
+const toTimestamp = (strDate) => Date.parse(strDate) / 1000;
+
 const EventForm = () => {
-  const dispacth = useDispatch;
+  const navigate = useNavigate();
   const { id } = useParams();
-  const event = useSelector((state) =>
-    state.events?.events.find((e) => e.id === id)
-  );
+  const event = useSelector((state) => {
+    if (Array.isArray(state.events?.events)) {
+      return state.events?.events.find((e) => e.id === id);
+    }
+    if (!id) {
+      return undefined;
+    } else {
+      return state.events?.events;
+    } 
+  });
 
-  const { values, errors, touched, handleBlur, setFieldValue, handleSubmit } =
-    useFormik({
-      initialValues: {
-        title: event?.title || "",
-        category: event?.category || "",
-        description: event?.description || "",
-        city: event?.city || "",
-        street: event?.city?.address || "",
-        date: event?.date?.toISOString().slice(0, 10) || "",
-      },
-      onSubmit: (values) => {
-        if (event) {
-          dispacth(updateEvent({ ...event, ...values }));
-        } else {
-          dispacth(
-            addEvent({
-              ...values,
-              id: Math.random(),
-              hostedBy: "Bob",
-              attendees: [],
-              hostPhotoURL: "",
-            })
-          );
-        }
-      },
-      validationSchema: validationSchema,
-    });
-
-  // Reseting Fields
-  useEffect(() => {
-    setFieldValue("title", event?.title || "");
-    setFieldValue("category", event?.category || "");
-    setFieldValue("description", event?.description || "");
-    setFieldValue("city", event?.city || "");
-    setFieldValue("street", event?.city?.address || "");
-    setFieldValue("date", event?.date?.toISOString().slice(0, 10) || "");
-  }, [setFieldValue, event]);
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFieldValue(name, value);
-  };
-
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    setFieldValue,
+    handleSubmit,
+  } = useFormik({
+    initialValues: {
+      title: "" || event?.title,
+      category: event?.category || "",
+      description: event?.description || "",
+      city: event?.city?.address || "",
+      street: event?.city?.address || "",
+      date: event ? new Date(event?.date).toISOString().slice(0, 10) : "",
+    },
+    onSubmit: async (values, { setSubmitting }) => {
+      const data = {
+        ...values,
+        date: toTimestamp(values.date),
+      };
+      try {
+        event
+          ? await updateEventsInFirestore(data)
+          : await addEventToFirestore(data);
+        setSubmitting(false);
+        navigate("/events");
+      } catch (error) {
+        // need to load toast
+        console.log(error);
+        setSubmitting(false);
+      }
+    },
+    validationSchema: validationSchema,
+  });
+  
   return (
     <form onSubmit={handleSubmit}>
       <TextField
@@ -97,6 +103,7 @@ const EventForm = () => {
         autoSelect
         autoComplete
         options={categoryList}
+        value={values.category}
         onChange={(e, value) => {
           setFieldValue("category", value);
         }}

@@ -15,7 +15,7 @@ const EventDetailedHeader = ({ event }) => {
 
   return (
     <Card>
-      <CardContent sx={{ background: grey[600], minHeight: 100 }}>
+      <CardContent sx={{ bgcolor: grey[600], minHeight: 100 }}>
         <Typography variant="h5">{event.title}</Typography>
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
           {deserializedDate.toUTCString()}

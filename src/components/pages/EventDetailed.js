@@ -32,6 +32,7 @@ const EventDetailed = () => {
   return (
     <Stack
       marginTop={{ xs: 3, md: 4 }}
+      marginBottom={{ xs: 2, md: 3 }}
       direction={{ xs: "column", md: "row" }}
       justifyContent="space-around"
       alignItems={{ xs: "flex-center", md: "flex-start" }}

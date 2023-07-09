@@ -39,7 +39,7 @@ const PlaceAutocomplete = ({
   return (
     <Autocomplete
       freeSolo
-      getOptionLabel={(option) => option.label || ''}
+      getOptionLabel={(option) => option.label || ""}
       options={suggestions}
       onChange={(e, value) => setFieldValue(name, value?.label)}
       renderInput={(params) => (
@@ -58,7 +58,7 @@ const PlaceAutocomplete = ({
           fullWidth
         />
       )}
-    //   renderOption={(option) => <div key={option.id}>{option.label}</div>}
+      //   renderOption={(option) => <div key={option.id}>{option.label}</div>}
     />
   );
 };

@@ -14,16 +14,17 @@ import { motion } from "framer-motion";
 //     background-position: 0% 50%;
 //   }
 // }`;
+// black gradient linear-gradient(180deg, #272727 0%, black 100%);
+// ua gradient `linear-gradient(0deg, #c8ee52d1, #ffd100, #23a6d5, #1976d2);`,
 
 const StyledBox = styled(Box)({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  background: `linear-gradient(0deg, #c8ee52d1, #ffd100, #23a6d5, #1976d2);`,
+  background: `linear-gradient(180deg, #272727 0%, black 100%);`,
 });
 
 const Home = () => {
-  // Animation doesnt work
   return (
     <StyledBox
       sx={{

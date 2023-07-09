@@ -1,4 +1,4 @@
-import { Backdrop, Box, Button, Fade, Modal } from '@mui/material';
+import { Backdrop, Box, Fade, Modal } from '@mui/material';
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleModal } from './modalReducer';
@@ -17,13 +17,13 @@ const style = {
 
 export const ModalWrapper = ({children, modalId}) => {
     const isOpen = useSelector(state => state.modals[modalId])
-    const dispacth = useDispatch()
+    const dispatch = useDispatch()
 
 
   return (
     <Modal
       open={isOpen}
-      onClose={() => dispacth(toggleModal(modalId))}
+      onClose={() => dispatch(toggleModal(modalId))}
       closeAfterTransition
       slots={{ backdrop: Backdrop }}
       slotProps={{
@@ -35,7 +35,6 @@ export const ModalWrapper = ({children, modalId}) => {
       <Fade in={isOpen}>
         <Box sx={style}>
           {children}
-          <Button onClick={() => dispacth(toggleModal(modalId))}>Close</Button>
         </Box>
       </Fade>
     </Modal>

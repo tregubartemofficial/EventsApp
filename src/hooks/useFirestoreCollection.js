@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { dataFromSnapshot } from "../app/firebase/firebaseService";
 
-
-export const useFirestoreCollection = ({ query, data, deps}) => {
+export const useFirestoreCollection = ({ query, data, deps }) => {
   useEffect(() => {
     const unsubscribe = query().onSnapshot(
       (snapshot) => {
