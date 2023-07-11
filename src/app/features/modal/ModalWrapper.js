@@ -8,7 +8,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: '40vw',
+  width: {xs: '90vw', md: '45vw' },
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
@@ -18,8 +18,6 @@ const style = {
 export const ModalWrapper = ({children, modalId}) => {
     const isOpen = useSelector(state => state.modals[modalId])
     const dispatch = useDispatch()
-
-
   return (
     <Modal
       open={isOpen}

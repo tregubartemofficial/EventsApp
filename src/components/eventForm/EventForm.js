@@ -10,6 +10,9 @@ import {
   updateEventsInFirestore,
 } from "../../app/firebase/firebaseService";
 
+const apiKey = "GgFavlAqzd0k4TxkgANMCXD23Kc4lF9S";
+
+
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
   category: yup.string().required("Category is required"),
@@ -136,19 +139,23 @@ const EventForm = () => {
         id="city"
         name="city"
         label="City"
+        value={values.city}
         onBlur={handleBlur}
         setFieldValue={setFieldValue}
         error={touched.city && Boolean(errors.city)}
         helperText={touched.city && errors.city}
+        apiKey={apiKey}
       />
       <PlaceAutocompleteField
         id="street"
         name="street"
         label="Street"
+        value={values.street}
         setFieldValue={setFieldValue}
         onBlur={handleBlur}
         error={touched.street && Boolean(errors.street)}
         helperText={touched.street && errors.street}
+        apiKey={apiKey}
       />
       <TextField
         id="date"

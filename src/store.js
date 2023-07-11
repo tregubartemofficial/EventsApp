@@ -11,14 +11,20 @@ const persistConfig = {
   storage,
 };
 
+const authPersistConfig = {
+  key: "auth",
+  storage: storage,
+};
+
 const persistedReducer = persistReducer(persistConfig, eventSlice.reducer);
+const persistedAuthReducer = persistReducer(authPersistConfig, authSlice.reducer);
 
 export const store = configureStore({
   reducer: {
     events: persistedReducer,
     modals: modalSlice.reducer,
     async: asyncSlice.reducer,
-    auth: authSlice.reducer,
+    auth: persistedAuthReducer,
   },
 });
 

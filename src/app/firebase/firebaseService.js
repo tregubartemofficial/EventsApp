@@ -1,4 +1,9 @@
 import firebase from "../config/firebase";
+import {
+  doc,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 
 const db = firebase.firestore();
 
@@ -34,6 +39,30 @@ export function addEventToFirestore(event) {
 
 export function updateEventsInFirestore(event) {
   return db.collection("events").doc(event.id).update(event);
+}
+
+export function setUserProfileData(user) {
+  return setDoc(doc(db, "users", user.uid), {
+    displayName: user.displayName,
+    email: user.email,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export function getUserProfile(userId) {
+  return doc(db, "users", userId);
+}
+
+export async function socialLogin() {
+  const provider = new firebase.auth.GoogleAuthProvider()
+  try {
+    const result = await firebase.auth().signInWithPopup(provider)
+    if (result.additionalUserInfo.isNewUser) {
+      await setUserProfileData(result.user)
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
 }
 
 // export function getUserProfile(userId) {

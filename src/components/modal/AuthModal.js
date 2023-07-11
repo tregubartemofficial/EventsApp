@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { ModalWrapper } from "../../app/features/modal/ModalWrapper";
-import { Alert, Button, Stack, TextField, Typography, styled } from "@mui/material";
+import {
+  Button,
+  Divider,
+  FormHelperText,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+  styled,
+} from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -9,6 +18,7 @@ import { useDispatch } from "react-redux";
 import { toggleModal } from "../../app/features/modal/modalReducer";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { signIn } from "../../app/features/auth/authReducer";
+import { socialLogin } from "../../app/firebase/firebaseService";
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -34,6 +44,7 @@ const validationSchema = yup.object({
 });
 
 const AuthModal = () => {
+  const [helperText, setHelperText] = useState("");
   const dispatch = useDispatch();
   const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
     useFormik({
@@ -53,20 +64,11 @@ const AuthModal = () => {
                 displayName: user.email,
               })
             );
+            dispatch(toggleModal("auth"));
           })
           .catch((error) => {
-            if (error.code === "auth/user-not-found") {
-              return (
-                <Alert severity="error">
-                  Email and password does not match any registered user
-                  accounts.
-                </Alert>
-              );
-            } else {
-              console.error(error);
-            }
+            setHelperText('Something went wrong with email or password');
           });
-        dispatch(toggleModal("auth"));
       },
       validationSchema: validationSchema,
     });
@@ -99,8 +101,18 @@ const AuthModal = () => {
             error={touched.password && Boolean(errors.password)}
             helperText={touched.password && errors.password}
           />
+          <FormHelperText error={true} sx={{ fontSize: "1rem" }}>
+            {helperText}
+          </FormHelperText>
           <Button type="submit">Sign In</Button>
         </form>
+        <IconButton sx={{borderRadius: 0}} onClick={() => {
+          socialLogin()
+          dispatch(toggleModal("auth"));
+          }}>
+          <GoogleIcon />
+        </IconButton>
+        <Divider />
         <Button
           component={Link}
           to="/register"
