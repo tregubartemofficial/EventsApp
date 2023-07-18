@@ -1,17 +1,24 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Autocomplete, Button, Stack, TextField } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Autocomplete,
+  Button,
+  Stack,
+  TextField,
+} from "@mui/material";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import PlaceAutocompleteField from "./PlaceAutocompleteField";
 import {
   addEventToFirestore,
   updateEventsInFirestore,
 } from "../../app/firebase/firebaseService";
+import { toggleModal } from "../../app/features/modal/modalReducer";
 
 const apiKey = "GgFavlAqzd0k4TxkgANMCXD23Kc4lF9S";
-
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -39,8 +46,10 @@ const categoryList = [
 const toTimestamp = (strDate) => Date.parse(strDate) / 1000;
 
 const EventForm = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
+  const { isAuth } = useSelector((state) => state.auth);
   const event = useSelector((state) => {
     if (Array.isArray(state.events?.events)) {
       return state.events?.events.find((e) => e.id === id);
@@ -49,7 +58,7 @@ const EventForm = () => {
       return undefined;
     } else {
       return state.events?.events;
-    } 
+    }
   });
 
   const {
@@ -62,11 +71,10 @@ const EventForm = () => {
     handleSubmit,
   } = useFormik({
     initialValues: {
-      title: "" || event?.title,
-      category: event?.category || "",
+      title: event?.title || '',
+      category: event?.category || null,
       description: event?.description || "",
       city: event?.city?.address || "",
-      street: event?.city?.address || "",
       date: event ? new Date(event?.date).toISOString().slice(0, 10) : "",
     },
     onSubmit: async (values, { setSubmitting }) => {
@@ -88,101 +96,110 @@ const EventForm = () => {
     },
     validationSchema: validationSchema,
   });
-  
+
   return (
-    <form onSubmit={handleSubmit}>
-      <TextField
-        id="title"
-        name="title"
-        label="Event title"
-        margin="normal"
-        value={values.title}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.title && Boolean(errors.title)}
-        helperText={touched.title && errors.title}
-      />
-      <Autocomplete
-        autoSelect
-        autoComplete
-        options={categoryList}
-        value={values.category}
-        onChange={(e, value) => {
-          setFieldValue("category", value);
-        }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            id="category"
-            name="category"
-            label="Category"
-            margin="normal"
-            value={values.category}
-            onBlur={handleBlur}
-            error={Boolean(touched.category && errors.category)}
-            helperText={touched.category && errors.category}
-          />
-        )}
-      />
-      <TextField
-        id="description"
-        name="description"
-        label="Description"
-        margin="normal"
-        value={values.description}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.description && Boolean(errors.description)}
-        helperText={touched.description && errors.description}
-      />
-      <PlaceAutocompleteField
-        id="city"
-        name="city"
-        label="City"
-        value={values.city}
-        onBlur={handleBlur}
-        setFieldValue={setFieldValue}
-        error={touched.city && Boolean(errors.city)}
-        helperText={touched.city && errors.city}
-        apiKey={apiKey}
-      />
-      <PlaceAutocompleteField
-        id="street"
-        name="street"
-        label="Street"
-        value={values.street}
-        setFieldValue={setFieldValue}
-        onBlur={handleBlur}
-        error={touched.street && Boolean(errors.street)}
-        helperText={touched.street && errors.street}
-        apiKey={apiKey}
-      />
-      <TextField
-        id="date"
-        type="date"
-        name="date"
-        margin="normal"
-        value={values.date}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.date && Boolean(errors.date)}
-        helperText={touched.date && errors.date}
-      />
-      <Stack direction="row" justifyContent="space-evenly">
-        <Button type="submit" variant="contained" sx={{ width: "40%" }}>
-          Submit
-        </Button>
-        <Button
-          component={Link}
-          to="/events"
-          variant="contained"
-          color="error"
-          sx={{ width: "40%" }}
-        >
-          Cancel
-        </Button>
-      </Stack>
-    </form>
+    <>
+      {!isAuth && (
+        <Alert severity="warning" sx={{ marginTop: 2 }}>
+          <AlertTitle>Warning</AlertTitle>
+          You should be authorized to create events!{" "}
+          <strong
+            style={{ cursor: "pointer" }}
+            onClick={() => dispatch(toggleModal("auth"))}
+          >
+            SIGN IN
+          </strong>
+        </Alert>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <TextField
+          id="title"
+          name="title"
+          label="Event title"
+          margin="normal"
+          value={values.title}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.title && Boolean(errors.title)}
+          helperText={touched.title && errors.title}
+        />
+        <Autocomplete
+          autoSelect
+          autoComplete
+          options={categoryList}
+          value={values.category}
+          onChange={(e, value) => {
+            setFieldValue("category", value);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              id="category"
+              name="category"
+              label="Category"
+              margin="normal"
+              value={values.category}
+              onBlur={handleBlur}
+              error={Boolean(touched.category && errors.category)}
+              helperText={touched.category && errors.category}
+            />
+          )}
+        />
+        <TextField
+          id="description"
+          name="description"
+          label="Description"
+          margin="normal"
+          value={values.description}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.description && Boolean(errors.description)}
+          helperText={touched.description && errors.description}
+        />
+        <PlaceAutocompleteField
+          id="venue"
+          name="venue"
+          label="Venue"
+          value={values.city}
+          onBlur={handleBlur}
+          setFieldValue={setFieldValue}
+          error={touched.city && Boolean(errors.city)}
+          helperText={touched.city && errors.city}
+          apiKey={apiKey}
+        />
+        <TextField
+          id="date"
+          type="date"
+          name="date"
+          margin="normal"
+          value={values.date}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.date && Boolean(errors.date)}
+          helperText={touched.date && errors.date}
+        />
+        <Stack direction="row" justifyContent="space-evenly">
+          <Button
+            type="submit"
+            disabled={!isAuth}
+            variant="contained"
+            sx={{ width: "40%" }}
+          >
+            Submit
+          </Button>
+          <Button
+            component={Link}
+            to="/events"
+            variant="contained"
+            color="error"
+            sx={{ width: "40%" }}
+          >
+            Cancel
+          </Button>
+        </Stack>
+      </form>
+    </>
   );
 };
 

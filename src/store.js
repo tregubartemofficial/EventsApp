@@ -1,10 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
-import { persistStore, persistReducer } from "redux-persist";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 import eventSlice from "./app/features/event/eventReducer";
 import modalSlice from "./app/features/modal/modalReducer";
-import asyncSlice from "./app/features/async/asyncReducer";
 import authSlice from "./app/features/auth/authReducer";
+import profileSlice from "./app/features/profile/profileReducer";
 
 const persistConfig = {
   key: "root",
@@ -22,10 +31,16 @@ const persistedAuthReducer = persistReducer(authPersistConfig, authSlice.reducer
 export const store = configureStore({
   reducer: {
     events: persistedReducer,
-    modals: modalSlice.reducer,
-    async: asyncSlice.reducer,
     auth: persistedAuthReducer,
+    modals: modalSlice.reducer,
+    profile: profileSlice.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
 
 export const persistor = persistStore(store);

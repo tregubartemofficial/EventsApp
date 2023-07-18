@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   IconButton,
+  ListItemIcon,
   Menu,
   MenuItem,
   Stack,
@@ -12,14 +13,14 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleModal } from "../../app/features/modal/modalReducer";
 import AuthModal from "../modal/AuthModal";
 import { signOut } from "../../app/features/auth/authReducer";
+import PhoneNav from "./PhoneNav";
+import { Logout, Person, Settings } from "@mui/icons-material";
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -34,7 +35,6 @@ const StyledTitle = styled(Typography)({
 const StyledBtn = styled(Button)({ my: 2, color: "white", display: "block" });
 
 const NavBar = () => {
-  const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const { isAuth, currUser } = useSelector((state) => state.auth);
   const navigate = useNavigate();
@@ -48,16 +48,11 @@ const NavBar = () => {
     navigate("/");
   };
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
@@ -76,78 +71,11 @@ const NavBar = () => {
           >
             EVENTAPP
           </StyledTitle>
-          {/* PHONE NAVIGATION */}
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <motion.div whileTap={{ scale: 0.85 }}>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-            </motion.div>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              <MenuItem component={Link} to="/" onClick={handleCloseNavMenu}>
-                Home
-              </MenuItem>
-              <MenuItem
-                component={Link}
-                to="/events"
-                onClick={handleCloseNavMenu}
-              >
-                Events
-              </MenuItem>
-              <MenuItem
-                component={Link}
-                to="/createEvent"
-                onClick={handleCloseNavMenu}
-              >
-                Сreate Event
-              </MenuItem>
-              {!isAuth && (
-                <MenuItem
-                  onClick={() => {
-                    handleCloseNavMenu();
-                    handleSignIn();
-                  }}
-                >
-                  Sign In
-                </MenuItem>
-              )}
-              {!isAuth && (
-                <MenuItem
-                  onClick={() => {
-                    handleCloseNavMenu();
-                    handleSignOut();
-                    navigate("/register");
-                  }}
-                >
-                  Register
-                </MenuItem>
-              )}
-            </Menu>
-          </Box>
+          <PhoneNav
+            isAuth={isAuth}
+            handleSignOut={handleSignOut}
+            handleSignIn={handleSignIn}
+          />
           <StyledTitle
             variant="h5"
             component={Link}
@@ -171,17 +99,16 @@ const NavBar = () => {
                 CREATE EVENT
               </StyledBtn>
             </Stack>
-            {!isAuth && (
-              <StyledBtn onClick={handleSignIn}>Sign In</StyledBtn>
-            )}
+            {!isAuth && <StyledBtn onClick={handleSignIn}>Sign In</StyledBtn>}
           </Box>
+          {/* USER */}
           {isAuth && (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="User profile">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar
                     alt={currUser.displayName}
-                    src="/static/images/avatar/2.jpg"
+                    src={currUser.photoURL}
                   />
                 </IconButton>
               </Tooltip>
@@ -201,11 +128,21 @@ const NavBar = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">Create Event</Typography>
+                <MenuItem
+                  component={Link}
+                  to={`/profile/${currUser.uid}`}
+                  onClick={handleCloseUserMenu}
+                >
+                  <ListItemIcon>
+                    <Person fontSize="small" />
+                  </ListItemIcon>
+                  <Typography textAlign="center">My profile</Typography>
                 </MenuItem>
                 <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">My profile</Typography>
+                  <ListItemIcon>
+                    <Settings fontSize="small" />
+                  </ListItemIcon>
+                  <Typography textAlign="center">Settings</Typography>
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
@@ -213,6 +150,9 @@ const NavBar = () => {
                     handleSignOut();
                   }}
                 >
+                  <ListItemIcon>
+                    <Logout fontSize="small" />
+                  </ListItemIcon>
                   <Typography textAlign="center">Sign Out</Typography>
                 </MenuItem>
               </Menu>

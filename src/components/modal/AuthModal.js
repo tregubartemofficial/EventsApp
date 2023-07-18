@@ -16,9 +16,10 @@ import * as yup from "yup";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toggleModal } from "../../app/features/modal/modalReducer";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { signIn } from "../../app/features/auth/authReducer";
-import { socialLogin } from "../../app/firebase/firebaseService";
+import {
+  logInWithEmailAndPassword,
+  socialLogin,
+} from "../../app/firebase/firebaseService";
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -53,23 +54,9 @@ const AuthModal = () => {
         password: "",
       },
       onSubmit: ({ email, password }) => {
-        const auth = getAuth();
-        signInWithEmailAndPassword(auth, email, password)
-          .then(({ user }) => {
-            dispatch(
-              signIn({
-                email: user.email,
-                photoURL: null,
-                uid: user.uid,
-                displayName: user.email,
-              })
-            );
-            dispatch(toggleModal("auth"));
-          })
-          .catch((error) => {
-            setHelperText('Something went wrong with email or password');
-          });
+        logInWithEmailAndPassword(email, password, dispatch, setHelperText);
       },
+
       validationSchema: validationSchema,
     });
   return (
@@ -106,10 +93,13 @@ const AuthModal = () => {
           </FormHelperText>
           <Button type="submit">Sign In</Button>
         </form>
-        <IconButton sx={{borderRadius: 0}} onClick={() => {
-          socialLogin()
-          dispatch(toggleModal("auth"));
-          }}>
+        <IconButton
+          sx={{ borderRadius: 0 }}
+          onClick={() => {
+            socialLogin();
+            dispatch(toggleModal("auth"));
+          }}
+        >
           <GoogleIcon />
         </IconButton>
         <Divider />

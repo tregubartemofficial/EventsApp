@@ -9,6 +9,9 @@ import Home from "./components/pages/Home";
 import EventDetailed from "./components/pages/EventDetailed";
 import RegisterForm from "./components/pages/RegisterForm";
 import "react-toastify/dist/ReactToastify.css";
+import "react-calendar/dist/Calendar.css";
+import Profile from "./components/pages/Profile";
+
 
 const darkTheme = createTheme({
   palette: {
@@ -38,6 +41,13 @@ function App() {
           element={<Con><EventDetailed /></Con>}
         />
         <Route
+          path="/events/:id"
+          element={<Con><EventDetailed /></Con>}
+        /><Route
+          path="/events/:id"
+          element={<Con><EventDetailed /></Con>}
+        />
+        <Route
           path="/createEvent"
           element={<Con><EventForm /></Con>}
         />
@@ -45,6 +55,10 @@ function App() {
           path="/manage/:id"
           element={<Con><EventForm /></Con>}
         />
+        <Route 
+          path="/profile/:id" 
+          element={<Con><Profile /></Con>}  
+         />
         <Route
           path="/register"
           element={<Con><RegisterForm /></Con>}

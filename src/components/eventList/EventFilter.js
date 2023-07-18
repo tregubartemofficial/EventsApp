@@ -1,22 +1,17 @@
 import React, { useState } from "react";
 import { Collapse, List, ListItemButton, ListItemIcon, ListItemText, Stack } from "@mui/material";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { useDispatch } from "react-redux";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+import SortIcon from "@mui/icons-material/Sort";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-
 
 const EventFilter = () => {
   const [open, setOpen] = useState(false)
-  const dispatch = useDispatch();
 
   return (
     <Stack>
       <List sx={{ border: "1px solid #2f2f2f", marginBottom: 2 }}>
         <ListItemButton onClick={() => setOpen(!open)}>
           <ListItemIcon>
-            <FilterAltIcon />
+            <SortIcon />
           </ListItemIcon>
           <ListItemText primary="Filters" />
           {open ? <ExpandLess /> : <ExpandMore />}
@@ -33,7 +28,6 @@ const EventFilter = () => {
           </ListItemButton>
         </Collapse>
       </List>
-      <Calendar />
     </Stack>
   );
 };

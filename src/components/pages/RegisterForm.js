@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { Button, FormHelperText, Stack, TextField } from "@mui/material";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { signIn } from "../../app/features/auth/authReducer";
+import { registerWithEmailAndPassword } from "../../app/firebase/firebaseService";
 
 const validationSchema = yup.object({
   email: yup.string().email("Not a proper email").required("Email is required"),
@@ -19,39 +18,6 @@ const validationSchema = yup.object({
     ),
   name: yup.string().required("Name is required"),
 });
-
-const registerWithEmailAndPassword = async (
-  email,
-  password,
-  name,
-  dispatch,
-  setSubmitting,
-  setHelperText,
-  navigate
-) => {
-  const auth = getAuth();
-  try {
-    const { user } = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    console.log(user);
-    dispatch(
-      signIn({
-        email: user.email,
-        photoURL: null,
-        uid: user.uid,
-        displayName: name,
-      })
-    );
-    setSubmitting(false);
-    navigate("/events");
-  } catch (error) {
-    setHelperText(`Problem with username or password`);
-    setSubmitting(false);
-  }
-};
 
 const RegisterForm = () => {
   const [helperText, setHelperText] = useState("");

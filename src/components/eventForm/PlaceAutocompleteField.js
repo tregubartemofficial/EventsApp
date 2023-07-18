@@ -16,6 +16,8 @@ const PlaceAutocomplete = ({
 
   const handleInputChange = async (event) => {
     const inputValue = event.target.value;
+
+    if (!inputValue) return
     axios
       .get(
         `https://api.tomtom.com/search/2/search/${encodeURIComponent(
@@ -28,7 +30,8 @@ const PlaceAutocomplete = ({
           id: index.toString(),
           label: result.address.freeformAddress,
         }));
-        setSuggestions(placeSuggestions);
+        console.log(placeSuggestions);
+        setSuggestions([ {id: 11, label: inputValue}, ...placeSuggestions]);
       })
       .catch((error) => {
         console.error("Error fetching place suggestions:", error);
