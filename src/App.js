@@ -1,43 +1,72 @@
-import { Container } from "@mui/material";
-import NavBar from "./components/nav/NavBar";
-import Main from "./components/pages/Main";
 import { Route, Routes } from "react-router";
-import EventForm from "./components/eventForm/EventForm";
-import Home from "./components/pages/Home";
-import EventDetailed from './components/pages/EventDetailed'
+import { Container as Con } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import NavBar from "./components/nav/NavBar";
+import Main from "./components/pages/Main";
+import EventForm from "./components/eventForm/EventForm";
+import Home from "./components/pages/Home";
+import EventDetailed from "./components/pages/EventDetailed";
+import RegisterForm from "./components/pages/RegisterForm";
+import "react-toastify/dist/ReactToastify.css";
+import "react-calendar/dist/Calendar.css";
+import Profile from "./components/pages/Profile";
+
 
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
   },
 });
-const lightTheme = createTheme({
-  palette: {
-    mode: 'light',
-  },
-});
+// const lightTheme = createTheme({
+//   palette: {
+//     mode: "light",
+//   },
+// });
 
 function App() {
-
+  // prettier-ignore
   return (
-    <ThemeProvider theme={lightTheme}>
+    <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <NavBar />
       <Routes>
-        <Route index element={<Home />} />
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/events"
+          element={<Con><Main /></Con>}
+        />
+        <Route
+          path="/events/:id"
+          element={<Con><EventDetailed /></Con>}
+        />
+        <Route
+          path="/events/:id"
+          element={<Con><EventDetailed /></Con>}
+        /><Route
+          path="/events/:id"
+          element={<Con><EventDetailed /></Con>}
+        />
+        <Route
+          path="/createEvent"
+          element={<Con><EventForm /></Con>}
+        />
+        <Route
+          path="/manage/:id"
+          element={<Con><EventForm /></Con>}
+        />
+        <Route 
+          path="/profile/:id" 
+          element={<Con><Profile /></Con>}  
+         />
+        <Route
+          path="/register"
+          element={<Con><RegisterForm /></Con>}
+        />
       </Routes>
-      <Container>
-        <Routes>
-          <Route path="/events" element={<Main />} />
-          <Route path="/events/:id" element={<EventDetailed />} />
-          <Route path="/createEvent" element={<EventForm />} />
-          <Route path="/manage/:id" element={<EventForm />} />
-        </Routes>
-      </Container>
     </ThemeProvider>
   );
+  // prettier-ignore-end
 }
 
 export default App;

@@ -8,6 +8,7 @@ import {
   Stack,
   Button,
   AvatarGroup,
+  CircularProgress,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -18,9 +19,8 @@ import { listenToEventsFromFirestore } from "../../app/firebase/firebaseService"
 import { useFirestoreCollection } from "../../hooks/useFirestoreCollection";
 
 const ListItems = () => {
-  const { events } = useSelector((state) => state.events);
-
   const dispatch = useDispatch();
+  const { events } = useSelector((state) => state.events);
 
   useFirestoreCollection({
     query: () => listenToEventsFromFirestore(),
@@ -28,6 +28,9 @@ const ListItems = () => {
     deps: dispatch,
   });
 
+  if (!events[0]) {
+    return <CircularProgress/>
+  }
   return (
     <List sx={{ width: "100%", maxWidth: 500 }}>
       {events.map((event) => {

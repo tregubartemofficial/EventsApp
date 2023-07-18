@@ -1,3 +1,5 @@
+// eslint-disable-next-line
+import Symbol_observable from "symbol-observable";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -5,25 +7,19 @@ import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
-import eventSlice from "./app/features/event/eventReducer";
-import modalSlice from "./app/features/modal/modalReducer";
-
-const store = configureStore({
-  reducer: {
-    events: eventSlice.reducer,
-    modals: modalSlice.reducer,
-  },
-});
+import { store, persistor } from "./store";
+import { PersistGate } from "redux-persist/integration/react";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-      <BrowserRouter>
-        <Provider store={store}>
+    <BrowserRouter>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
           <App />
-        </Provider>
-      </BrowserRouter>
+        </PersistGate>
+      </Provider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 
