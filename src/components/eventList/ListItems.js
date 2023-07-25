@@ -17,6 +17,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteEvent, fetchEvent } from "../../app/features/event/eventReducer";
 import { listenToEventsFromFirestore } from "../../app/firebase/firebaseService";
 import { useFirestoreCollection } from "../../hooks/useFirestoreCollection";
+import { grey } from "@mui/material/colors";
+import { motion } from "framer-motion";
 
 const ListItems = () => {
   const dispatch = useDispatch();
@@ -31,81 +33,94 @@ const ListItems = () => {
   if (!events[0]) {
     return <CircularProgress/>
   }
+  
   return (
     <List sx={{ width: "100%", maxWidth: 500 }}>
       {events.map((event) => {
         const deserializedDate = new Date(event.date);
         return (
-          <ListItem
-            sx={{ flexDirection: "column", marginBottom: 1 }}
-            key={event.id}
-            divider={true}
+          <motion.div
+            whileHover={{
+              borderRadius: '10px',
+              backgroundColor: grey[900],
+              transition: { duration: 0.2 },
+            }}
           >
-            <Stack
-              direction="row"
-              sx={{
-                width: "100%",
-              }}
+            <ListItem
+              sx={{ flexDirection: "column", marginBottom: 1}}
+              key={event.id}
             >
-              <ListItemAvatar>
-                <Avatar alt={event.hostedBy} src={event.hostPhotoURL} />
-              </ListItemAvatar>
-              <ListItemText
-                primary={event.title}
-                secondary={`Hosted by ${event.hostedBy}`}
-              />
-            </Stack>
-            <Stack direction="row">
-              <AccessTimeIcon />
-              <ListItemText
-                primary={deserializedDate.toLocaleDateString("de-DE")}
-              />
-              <LocationOnIcon />
-              <ListItemText primary={event.city.address} />
-            </Stack>
-            <Stack
-              direction="row"
-              sx={{
-                width: "100%",
-                p: "1rem 0",
-              }}
-            >
-              <AvatarGroup sx={{ marginLeft: 2 }} max={5}>
-                {event.attendees.map((attender) => (
-                  <Avatar
-                    alt={attender.name}
-                    src={attender.photoURL}
-                    key={attender.id}
-                  />
-                ))}
-              </AvatarGroup>
-            </Stack>
-            <Stack
-              flexDirection="row"
-              flexWrap="wrap"
-              justifyContent="end"
-              alignItems="space-between"
-              sx={{ w: "100%" }}
-            >
-              <ListItemText primary={event.description} />
-              <Button
-                variant="contained"
-                sx={{ m: 1 }}
-                component={Link}
-                to={`/events/${event.id}`}
+              <Stack
+                direction="row"
+                sx={{
+                  width: "100%",
+                }}
               >
-                View
-              </Button>
-              <Button
-                onClick={() => dispatch(deleteEvent(event.id))}
-                variant="contained"
-                color="error"
-                sx={{ m: 1 }}
+                <ListItemAvatar>
+                  <Avatar alt={event.hostedBy} src={event.hostPhotoURL} />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={event.title}
+                  secondary={`Hosted by ${event.hostedBy}`}
+                />
+              </Stack>
+              <Stack direction="row" sx={{ width: "100%" }}>
+                <AccessTimeIcon />
+                <ListItemText
+                  primary={deserializedDate.toLocaleDateString("de-DE")}
+                />
+                <LocationOnIcon />
+                <ListItemText primary={event.venue.address} />
+              </Stack>
+              <Stack
+                direction="row"
+                sx={{
+                  width: "100%",
+                  p: "1rem 0",
+                  bgcolor: grey[900],
+                }}
               >
-                Delete
-              </Button>
-            </Stack>
-          </ListItem>
+                <AvatarGroup sx={{ marginLeft: 2 }} max={5}>
+                  {event.attendees.map((attender) => (
+                    <Avatar
+                      alt={attender.name}
+                      src={attender.photoURL}
+                      key={attender.id}
+                    />
+                  ))}
+                </AvatarGroup>
+              </Stack>
+              <Stack
+                flexDirection="row"
+                justifyContent="start"
+                sx={{ width: "100%" }}
+              >
+                <ListItemText primary={event.description} />
+              </Stack>
+              <Stack
+                flexDirection="row"
+                justifyContent="end"
+                sx={{ width: "100%" }}
+              >
+                <Button
+                  variant="contained"
+                  sx={{ m: 1 }}
+                  component={Link}
+                  to={`/events/${event.id}`}
+                >
+                  View
+                </Button>
+                <Button
+                  onClick={() => dispatch(deleteEvent(event.id))}
+                  variant="contained"
+                  color="error"
+                  sx={{ m: 1 }}
+                >
+                  Delete
+                </Button>
+              </Stack>
+            </ListItem>
+          </motion.div>
         );
       })}
     </List>

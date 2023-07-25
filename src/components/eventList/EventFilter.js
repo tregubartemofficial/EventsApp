@@ -7,8 +7,10 @@ const EventFilter = () => {
   const [open, setOpen] = useState(false)
 
   return (
-    <Stack>
-      <List sx={{ border: "1px solid #2f2f2f", marginBottom: 2 }}>
+    <Stack sx={{width: { xs: '100%', md: 'auto' }}}>
+      <List
+        sx={{ border: "1px solid #2f2f2f", marginBottom: 2, marginTop: 2 }}
+      >
         <ListItemButton onClick={() => setOpen(!open)}>
           <ListItemIcon>
             <SortIcon />

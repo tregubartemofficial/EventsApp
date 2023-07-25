@@ -11,6 +11,7 @@ import RegisterForm from "./components/pages/RegisterForm";
 import "react-toastify/dist/ReactToastify.css";
 import "react-calendar/dist/Calendar.css";
 import Profile from "./components/pages/Profile";
+import Settings from "./components/pages/Settings";
 
 
 const darkTheme = createTheme({
@@ -59,6 +60,10 @@ function App() {
           path="/profile/:id" 
           element={<Con><Profile /></Con>}  
          />
+         <Route
+          path="/setings/:id"
+          element={<Con><Settings /></Con>}
+        />
         <Route
           path="/register"
           element={<Con><RegisterForm /></Con>}

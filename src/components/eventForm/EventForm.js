@@ -24,8 +24,7 @@ const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
   category: yup.string().required("Category is required"),
   description: yup.string().required("Description is required"),
-  city: yup.string().required("City is required"),
-  street: yup.string().required("Street is required"),
+  venue: yup.string().required("Venue is required"),
   date: yup.string().required("Date is required"),
 });
 
@@ -49,7 +48,7 @@ const EventForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-  const { isAuth } = useSelector((state) => state.auth);
+  const { isAuth, currUser } = useSelector((state) => state.auth);
   const event = useSelector((state) => {
     if (Array.isArray(state.events?.events)) {
       return state.events?.events.find((e) => e.id === id);
@@ -74,22 +73,23 @@ const EventForm = () => {
       title: event?.title || '',
       category: event?.category || null,
       description: event?.description || "",
-      city: event?.city?.address || "",
+      venue: event?.venue?.address || "",
       date: event ? new Date(event?.date).toISOString().slice(0, 10) : "",
     },
     onSubmit: async (values, { setSubmitting }) => {
+      console.log(44564);
       const data = {
         ...values,
         date: toTimestamp(values.date),
       };
+
       try {
         event
           ? await updateEventsInFirestore(data)
-          : await addEventToFirestore(data);
+          : await addEventToFirestore(data, currUser);
         setSubmitting(false);
         navigate("/events");
       } catch (error) {
-        // need to load toast
         console.log(error);
         setSubmitting(false);
       }
@@ -151,6 +151,8 @@ const EventForm = () => {
           name="description"
           label="Description"
           margin="normal"
+          multiline
+          maxRows={4}
           value={values.description}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -161,11 +163,11 @@ const EventForm = () => {
           id="venue"
           name="venue"
           label="Venue"
-          value={values.city}
+          value={values.venue}
           onBlur={handleBlur}
           setFieldValue={setFieldValue}
-          error={touched.city && Boolean(errors.city)}
-          helperText={touched.city && errors.city}
+          error={touched.venue && Boolean(errors.venue)}
+          helperText={touched.venue && errors.venue}
           apiKey={apiKey}
         />
         <TextField
