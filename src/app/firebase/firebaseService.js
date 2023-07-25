@@ -26,16 +26,15 @@ export function listenToEventsFromFirestore() {
 export function listenToEventFromFirestore(eventId) {
   return db.collection("events").doc(eventId);
 }
-
-export function addEventToFirestore(event) {
+export function addEventToFirestore(event, currUser) {
   return db.collection("events").add({
     ...event,
-    hostedBy: "Anna",
-    hostPhotoURL: "https://randomuser.me/api/portraits/women/70.jpg",
+    hostedBy: currUser.displayName,
+    hostPhotoURL: currUser.photoURL,
     attendees: firebase.firestore.FieldValue.arrayUnion({
-      id: Math.random(),
-      displayName: "Anna",
-      hostPhotoURL: "https://randomuser.me/api/portraits/women/70.jpg",
+      id: currUser.uid,
+      name: currUser.displayName,
+      photoURL: currUser.photoURL,
     }),
   });
 }
@@ -104,7 +103,6 @@ export const registerWithEmailAndPassword = async (
   navigate
 ) => {
   try {
-    const auth = getAuth();
     const { user } = await createUserWithEmailAndPassword(auth, email, password);
     dispatch(
       signIn({
@@ -142,7 +140,7 @@ export async function socialLogin() {
 
 // havent tested
 export async function updateUserProfile(profile) {
-  const user = firebase.auth().currentUser;
+  const user = auth.currentUser;
   console.log(user);
   try {
     // if (user?.displayName !== profile?.displayName) {

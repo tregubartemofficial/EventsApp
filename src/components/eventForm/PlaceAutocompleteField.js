@@ -30,7 +30,6 @@ const PlaceAutocomplete = ({
           id: index.toString(),
           label: result.address.freeformAddress,
         }));
-        console.log(placeSuggestions);
         setSuggestions([ {id: 11, label: inputValue}, ...placeSuggestions]);
       })
       .catch((error) => {
