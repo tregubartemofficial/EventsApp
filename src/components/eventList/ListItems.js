@@ -41,15 +41,13 @@ const ListItems = () => {
         return (
           <motion.div
             whileHover={{
-              borderRadius: '10px',
+              borderRadius: "10px",
               backgroundColor: grey[900],
               transition: { duration: 0.2 },
             }}
+            key={event.id}
           >
-            <ListItem
-              sx={{ flexDirection: "column", marginBottom: 1}}
-              key={event.id}
-            >
+            <ListItem sx={{ flexDirection: "column", marginBottom: 1 }}>
               <Stack
                 direction="row"
                 sx={{

@@ -7,7 +7,13 @@ import { useNavigate } from "react-router";
 import { registerWithEmailAndPassword } from "../../app/firebase/firebaseService";
 
 const validationSchema = yup.object({
-  email: yup.string().email("Not a proper email").required("Email is required"),
+  email: yup
+    .string()
+    .matches(
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      "Invalid email format"
+    )
+    .required("Email is required"),
   password: yup
     .string()
     .required("Password is required")
@@ -82,7 +88,7 @@ const RegisterForm = () => {
           helperText={touched.name && errors.name}
         />
         <FormHelperText error={true} sx={{fontSize:'1rem'}}>{helperText}</FormHelperText>
-        <Button type="submit">Log In</Button>
+        <Button type="submit">Register</Button>
       </form>
     </Stack>
   );
