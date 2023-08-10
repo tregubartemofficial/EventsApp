@@ -9,7 +9,7 @@ import Home from "./components/pages/Home";
 import EventDetailed from "./components/pages/EventDetailed";
 import RegisterForm from "./components/pages/RegisterForm";
 import "react-toastify/dist/ReactToastify.css";
-import "react-calendar/dist/Calendar.css";
+// import "react-calendar/dist/Calendar.css";
 import Profile from "./components/pages/Profile";
 import Settings from "./components/pages/Settings";
 
@@ -19,6 +19,7 @@ const darkTheme = createTheme({
     mode: "dark",
   },
 });
+
 // const lightTheme = createTheme({
 //   palette: {
 //     mode: "light",
@@ -35,38 +36,75 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route
           path="/events"
-          element={<Con><Main /></Con>}
+          element={
+            <Con component="main">
+              <Main />
+            </Con>
+          }
         />
         <Route
           path="/events/:id"
-          element={<Con><EventDetailed /></Con>}
+          element={
+            <Con component="main">
+              <EventDetailed />
+            </Con>
+          }
         />
         <Route
           path="/events/:id"
-          element={<Con><EventDetailed /></Con>}
-        /><Route
+          element={
+            <Con component="main">
+              <EventDetailed />
+            </Con>
+          }
+        />
+        <Route
           path="/events/:id"
-          element={<Con><EventDetailed /></Con>}
+          element={
+            <Con component="main">
+              <EventDetailed />
+            </Con>
+          }
         />
         <Route
           path="/createEvent"
-          element={<Con><EventForm /></Con>}
+          element={
+            <Con component="main">
+              <EventForm />
+            </Con>
+          }
         />
         <Route
           path="/manage/:id"
-          element={<Con><EventForm /></Con>}
+          element={
+            <Con component="main">
+              <EventForm />
+            </Con>
+          }
         />
-        <Route 
-          path="/profile/:id" 
-          element={<Con><Profile /></Con>}  
-         />
-         <Route
-          path="/setings/:id"
-          element={<Con><Settings /></Con>}
+        <Route
+          path="/profile/:id"
+          element={
+            <Con component="main">
+              <Profile />
+            </Con>
+          }
+        />
+        <Route
+          path="/settings/:id"
+          element={
+            <Con component="main">
+              <Settings />
+            </Con>
+          }
         />
         <Route
           path="/register"
-          element={<Con><RegisterForm /></Con>}
+          element={
+            <Con component="main">
+              <RegisterForm />
+            </Con>
+          }
         />
       </Routes>
     </ThemeProvider>

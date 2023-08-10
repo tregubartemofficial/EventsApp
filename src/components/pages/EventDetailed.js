@@ -26,7 +26,6 @@ const EventDetailed = () => {
     state.events.events
   );
 
-
   if (!event.title) return <CircularProgress />
 
   return (

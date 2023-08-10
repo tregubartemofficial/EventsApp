@@ -5,16 +5,14 @@ import EventFilter from "../eventList/EventFilter";
 
 const Main = () => {
   return (
-    <main>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent="space-around"
-        alignItems="center"
+        alignItems="flex-start"
       >
         <ListItems />
         <EventFilter/>
       </Stack>
-    </main>
   );
 };
 

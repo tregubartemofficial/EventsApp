@@ -106,10 +106,7 @@ const NavBar = () => {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="User profile">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar
-                    alt={currUser.displayName}
-                    src={currUser.photoURL}
-                  />
+                  <Avatar alt={currUser.displayName} src={currUser.photoURL} />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -138,7 +135,11 @@ const NavBar = () => {
                   </ListItemIcon>
                   <Typography textAlign="center">My profile</Typography>
                 </MenuItem>
-                <MenuItem onClick={handleCloseUserMenu}>
+                <MenuItem
+                  component={Link}
+                  to={`/settings/${currUser.uid}`}
+                  onClick={handleCloseUserMenu}
+                >
                   <ListItemIcon>
                     <Settings fontSize="small" />
                   </ListItemIcon>

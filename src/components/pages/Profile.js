@@ -10,7 +10,6 @@ import {
 } from "../../app/features/profile/profileReducer";
 import { Alert, AlertTitle } from "@mui/material";
 
-
 const Profile = () => {
   const dispatch = useDispatch();
   const { id } = useParams();

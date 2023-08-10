@@ -1,11 +1,20 @@
-import React from "react";
-import { Avatar, Button, Card, Stack, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Alert, Avatar, Button, Card, Snackbar, Stack, Typography } from "@mui/material";
 import EditProfileModal from "../modal/EditProfileModal";
 import { useDispatch } from "react-redux";
 import { toggleModal } from "../../app/features/modal/modalReducer";
+import copy from "clipboard-copy";
+import { grey } from "@mui/material/colors";
 
 const ProfileHeader = ({ profile, isAuthUserProfile }) => {
   const dispatch = useDispatch();
+  const [openMessage, setOpenMessage] = useState(false);
+
+  const handleCopyURL = () => {
+    setOpenMessage(true)
+    copy(window.location.href)
+  };
+  
   return (
     <>
       <Card sx={{ marginTop: 2, marginBottom: 2 }}>
@@ -48,14 +57,24 @@ const ProfileHeader = ({ profile, isAuthUserProfile }) => {
                 Follow
               </Button>
             )}
-
             <Button
               variant="contained"
               sx={{ width: "45%" }}
               disabled={profile.error}
+              onClick={() => handleCopyURL()}
             >
               Share profile
             </Button>
+            <Snackbar
+              open={openMessage}
+              autoHideDuration={2500}
+              onClose={() => setOpenMessage(false)}
+              anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+            >
+              <Alert color="success" severity="success" sx={{bgcolor:grey[900]}}>
+                Profile URL copied
+              </Alert>
+            </Snackbar>
           </Stack>
         </Stack>
       </Card>
