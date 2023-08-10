@@ -12,7 +12,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
 import { toggleModal } from "../../app/features/modal/modalReducer";
-import { updateUserAvatar } from "../../app/firebase/firebaseService";
+import { updateUserAvatar, updateUserProfile } from "../../app/firebase/firebaseService";
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -38,10 +38,13 @@ const EditProfileModal = ({ profile }) => {
   const { values, errors, touched, handleChange, handleBlur, handleSubmit, } =
     useFormik({
       initialValues: {
-        email: "",
-        password: "",
+        name: "",
+        bio: "",
       },
-      onSubmit: ({ name, bio }) => {},
+      onSubmit: ({name, bio}) => {
+        updateUserProfile({displayName: name, bio: bio});
+        dispatch(toggleModal('editProfile'))
+      },
       validationSchema: validationSchema,
     });
 
@@ -88,6 +91,8 @@ const EditProfileModal = ({ profile }) => {
             id="bio"
             name="bio"
             label="Bio"
+            multiline
+            maxRows={4}
             margin="normal"
             value={values.bio}
             onChange={handleChange}

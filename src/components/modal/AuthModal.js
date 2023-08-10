@@ -20,6 +20,7 @@ import {
   logInWithEmailAndPassword,
   socialLogin,
 } from "../../app/firebase/firebaseService";
+import { signIn } from "../../app/features/auth/authReducer";
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -96,7 +97,7 @@ const AuthModal = () => {
         <IconButton
           sx={{ borderRadius: 0 }}
           onClick={() => {
-            socialLogin();
+            socialLogin(dispatch, signIn);
             dispatch(toggleModal("auth"));
           }}
         >

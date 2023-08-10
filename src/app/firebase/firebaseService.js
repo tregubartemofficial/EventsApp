@@ -50,6 +50,7 @@ export function setUserProfileData(user) {
     email: user.email,
     createdAt: Math.floor(Date.now() / 1000),
     uid: user.uid,
+    photoURL: user?.photoURL
   });
 }
 
@@ -126,28 +127,31 @@ export const registerWithEmailAndPassword = async (
 };
 
 // used in AuthModal to reg logIn ands singIn
-export async function socialLogin() {
+export async function socialLogin(dispatch, signIn) {
   const provider = new firebase.auth.GoogleAuthProvider();
   try {
     const result = await firebase.auth().signInWithPopup(provider);
     if (result.additionalUserInfo.isNewUser) {
       await setUserProfileData(result.user);
     }
+    const profile = await getUserProfile(result.user["_delegate"].uid);
+    dispatch(
+      signIn({
+        email: profile.email,
+        photoURL: result.user["_delegate"]?.photoURL,
+        uid: profile.uid,
+        displayName: profile.displayName,
+      })
+    );
   } catch (error) {
     console.log(error.message);
   }
 }
 
-// havent tested
+// used in EditProfileModal
 export async function updateUserProfile(profile) {
   const user = auth.currentUser;
-  console.log(user);
   try {
-    // if (user?.displayName !== profile?.displayName) {
-    //   await user.updateProfile({
-    //     displayName: profile.dispayName,
-    //   });
-    // }
     return await db.collection("users").doc(user.uid).update(profile);
   } catch (error) {
     throw error;

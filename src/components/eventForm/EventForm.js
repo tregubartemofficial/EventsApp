@@ -25,7 +25,7 @@ const validationSchema = yup.object({
   category: yup.string().required("Category is required"),
   description: yup.string().required("Description is required"),
   venue: yup.string().required("Venue is required"),
-  date: yup.string().required("Date is required"),
+  date: yup.date().required("Date is required"),
 });
 
 const categoryList = [
