@@ -1,13 +1,13 @@
 import React from "react";
-import ProfileHeader from "../profile/ProfileHeader";
-import ProfileContent from "../profile/ProfileContent";
+import ProfileHeader from "../components/profile/ProfileHeader";
+import ProfileContent from "../components/profile/ProfileContent";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { getUserProfile } from "../../app/firebase/firebaseService";
+import { getUserProfile } from "../app/firebase/firebaseService";
 import {
   setNoProfile,
   setProfile,
-} from "../../app/features/profile/profileReducer";
+} from "../app/features/profile/profileReducer";
 import { Alert, AlertTitle } from "@mui/material";
 
 const Profile = () => {
@@ -23,8 +23,8 @@ const Profile = () => {
       dispatch(setNoProfile());
     }
   })();
-
-  const isAuthUserProfile = currUser.uid === id;
+  
+  const isAuthUserProfile = currUser?.uid === id;
 
   return (
     <>

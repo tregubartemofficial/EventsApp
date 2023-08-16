@@ -3,16 +3,20 @@ import {
   Card,
   CardActions,
   CardContent,
-  Stack,
   Typography,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { updateAttendees } from "../../app/firebase/firebaseService";
+import { toggleModal } from "../../app/features/modal/modalReducer";
 
 const EventDetailedHeader = ({ event }) => {
   const deserializedDate = new Date(event.date);
-
+  const dispatch = useDispatch()
+  const { currUser } = useSelector((state) => state.auth);
+  
   return (
     <Card>
       <CardContent sx={{ bgcolor: grey[600], minHeight: 100 }}>
@@ -23,22 +27,53 @@ const EventDetailedHeader = ({ event }) => {
         <Typography variant="body2">Hosted by {event.hostedBy}</Typography>
       </CardContent>
       <CardActions sx={{ justifyContent: "space-between" }}>
-        <Button disabled variant="contained">
-          Cancel my place
-        </Button>
-        <Stack flexDirection="row">
-          <Button variant="contained" sx={{ margin: "0 0 0 5px" }}>
-            Join this event
-          </Button>
-          <Button
-            component={Link}
-            to={`/manage/${event.id}`}
-            variant="contained"
-            sx={{ margin: "0 0 0 5px" }}
-          >
-            Manage event
-          </Button>
-        </Stack>
+        {currUser?.uid ? (
+          <>
+            {!event.attendees.some(
+              (attendee) => attendee.uid === currUser.uid
+            ) ? (
+              <Button
+                variant="contained"
+                sx={{ ml: "5px" }}
+                onClick={() => updateAttendees(event.id, currUser, "add")}
+              >
+                Join this event
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                sx={{ ml: "5px" }}
+                onClick={() => updateAttendees(event.id, currUser, "remove")}
+              >
+                Cancel my place
+              </Button>
+            )}
+            {event.uid === currUser.uid && (
+              <>
+                <Button
+                  component={Link}
+                  to={`/manage/${event.id}`}
+                  variant="contained"
+                  sx={{ ml: "5px" }}
+                >
+                  Manage event
+                </Button>
+                <Button
+                  // onClick={() => dispatch(deleteEvent(event.id))}
+                  component={Link}
+                  to={`/events`}
+                  variant="contained"
+                  color="error"
+                  sx={{ ml: "5px" }}
+                >
+                  Delete
+                </Button>
+              </>
+            )}
+          </>
+        ) : (
+          <Button variant="contained" onClick={() => dispatch(toggleModal('auth'))} >Log in to join event</Button>
+        )}
       </CardActions>
     </Card>
   );

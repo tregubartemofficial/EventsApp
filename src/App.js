@@ -2,16 +2,16 @@ import { Route, Routes } from "react-router";
 import { Container as Con } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import NavBar from "./components/nav/NavBar";
-import Main from "./components/pages/Main";
+import NavBar from "./components/navigation/NavBar";
+import Main from "./pages/Main";
 import EventForm from "./components/eventForm/EventForm";
-import Home from "./components/pages/Home";
-import EventDetailed from "./components/pages/EventDetailed";
-import RegisterForm from "./components/pages/RegisterForm";
+import Home from "./pages/Home";
+import EventDetailed from "./pages/EventDetailed";
+import RegisterForm from "./pages/RegisterForm";
 import "react-toastify/dist/ReactToastify.css";
 // import "react-calendar/dist/Calendar.css";
-import Profile from "./components/pages/Profile";
-import Settings from "./components/pages/Settings";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 
 
 const darkTheme = createTheme({

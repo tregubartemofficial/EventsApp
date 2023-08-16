@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import {
@@ -18,7 +18,6 @@ import {
 } from "../../app/firebase/firebaseService";
 import { toggleModal } from "../../app/features/modal/modalReducer";
 
-const apiKey = "GgFavlAqzd0k4TxkgANMCXD23Kc4lF9S";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -42,13 +41,12 @@ const categoryList = [
   "Kids & Family",
 ];
 
-const toTimestamp = (strDate) => Date.parse(strDate) / 1000;
-
 const EventForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
   const { isAuth, currUser } = useSelector((state) => state.auth);
+  const [selectedVenue, setSelectedVenue] = useState({});
   const event = useSelector((state) => {
     if (Array.isArray(state.events?.events)) {
       return state.events?.events.find((e) => e.id === id);
@@ -60,6 +58,10 @@ const EventForm = () => {
     }
   });
 
+  const cancelButtonLink = id ? `/events/${id}` : "/events";
+
+  const handleSelectedVenue = (data) => setSelectedVenue(data);
+
   const {
     values,
     errors,
@@ -70,28 +72,26 @@ const EventForm = () => {
     handleSubmit,
   } = useFormik({
     initialValues: {
-      title: event?.title || '',
+      title: event?.title || "",
       category: event?.category || null,
       description: event?.description || "",
-      venue: event?.venue?.address || "",
+      venue: event?.venue || "",
       date: event ? new Date(event?.date).toISOString().slice(0, 10) : "",
     },
-    onSubmit: async (values, { setSubmitting }) => {
-      console.log(44564);
+    onSubmit: async (values) => {
       const data = {
         ...values,
-        date: toTimestamp(values.date),
+        date: new Date(values.date).getTime(),
+        venue: selectedVenue,
       };
 
       try {
         event
           ? await updateEventsInFirestore(data)
           : await addEventToFirestore(data, currUser);
-        setSubmitting(false);
         navigate("/events");
       } catch (error) {
-        console.log(error);
-        setSubmitting(false);
+        console.error(error);
       }
     },
     validationSchema: validationSchema,
@@ -121,7 +121,7 @@ const EventForm = () => {
           value={values.title}
           onChange={handleChange}
           onBlur={handleBlur}
-          error={touched.title && Boolean(errors.title)}
+          error={Boolean(touched.title && errors.title)}
           helperText={touched.title && errors.title}
         />
         <Autocomplete
@@ -156,19 +156,18 @@ const EventForm = () => {
           value={values.description}
           onChange={handleChange}
           onBlur={handleBlur}
-          error={touched.description && Boolean(errors.description)}
+          error={Boolean(touched.description && errors.description)}
           helperText={touched.description && errors.description}
         />
         <PlaceAutocompleteField
           id="venue"
           name="venue"
           label="Venue"
-          value={values.venue}
           onBlur={handleBlur}
           setFieldValue={setFieldValue}
-          error={touched.venue && Boolean(errors.venue)}
+          error={Boolean(touched.venue && errors.venue)}
           helperText={touched.venue && errors.venue}
-          apiKey={apiKey}
+          handleSelectedVenue={handleSelectedVenue}
         />
         <TextField
           id="date"
@@ -178,7 +177,7 @@ const EventForm = () => {
           value={values.date}
           onChange={handleChange}
           onBlur={handleBlur}
-          error={touched.date && Boolean(errors.date)}
+          error={Boolean(touched.date && errors.date)}
           helperText={touched.date && errors.date}
         />
         <Stack direction="row" justifyContent="space-evenly">
@@ -192,7 +191,7 @@ const EventForm = () => {
           </Button>
           <Button
             component={Link}
-            to="/events"
+            to={cancelButtonLink}
             variant="contained"
             color="error"
             sx={{ width: "40%" }}

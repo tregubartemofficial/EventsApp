@@ -9,7 +9,6 @@ const db = firebase.firestore();
 const storage = firebase.storage();
 const auth = getAuth();
 
-
 export function dataFromSnapshot(snapshot) {
   if (!snapshot.exists) return undefined;
   const data = snapshot.data();
@@ -26,13 +25,15 @@ export function listenToEventsFromFirestore() {
 export function listenToEventFromFirestore(eventId) {
   return db.collection("events").doc(eventId);
 }
+
 export function addEventToFirestore(event, currUser) {
   return db.collection("events").add({
     ...event,
     hostedBy: currUser.displayName,
     hostPhotoURL: currUser.photoURL,
+    uid: currUser.uid,
     attendees: firebase.firestore.FieldValue.arrayUnion({
-      id: currUser.uid,
+      uid: currUser.uid,
       name: currUser.displayName,
       photoURL: currUser.photoURL,
     }),
@@ -99,7 +100,6 @@ export const registerWithEmailAndPassword = async (
   password,
   name,
   dispatch,
-  setSubmitting,
   setHelperText,
   navigate
 ) => {
@@ -118,11 +118,9 @@ export const registerWithEmailAndPassword = async (
       photoURL: null,
       displayName: name,
     });
-    setSubmitting(false);
     navigate("/events");
   } catch (error) {
     setHelperText(`Problem with username or password`);
-    setSubmitting(false);
   }
 };
 
@@ -177,4 +175,34 @@ export async function updateUserAvatar(img, profile, dispatch) {
       photoURL: avatarURL,
     })
   );
+}
+// used in EventDetailed
+export async function updateAttendees(eventId, currUser, action) {
+  try {
+    const eventRef = db.collection("events").doc(eventId);
+    const eventDoc = await eventRef.get();
+    const eventData = eventDoc.data();
+    // const userRef = db.collection("users").doc(currUser.uid);
+    // const userDoc = await userRef.get();
+    // const userData = userDoc.data();
+
+    let updatedAttendees = [...eventData.attendees];
+
+    if (action === "add") {
+      updatedAttendees.push({
+        name: currUser.displayName,
+        uid: currUser.uid,
+        photoURL: currUser.photoURL,
+      });
+    } else if (action === "remove") {
+      updatedAttendees = updatedAttendees.filter(
+        (attendee) => attendee.uid !== currUser.uid
+      );
+    } else {
+      throw new Error("Invalid action specified.");
+    }
+    await eventRef.update({ attendees: updatedAttendees });
+  } catch (error) {
+    console.error("Error updating attendees:", error);
+  }
 }

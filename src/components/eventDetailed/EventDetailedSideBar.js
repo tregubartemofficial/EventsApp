@@ -9,6 +9,7 @@ import {
   ListSubheader,
 } from "@mui/material";
 import React from "react";
+import { Link } from "react-router-dom";
 
 const EventDetailedSideBar = ({event}) => {
   return (
@@ -21,17 +22,17 @@ const EventDetailedSideBar = ({event}) => {
         }
         sx={{ minWidth: 360, bgcolor: "background.paper" }}
       >
-        {event.attendees.map((attender) => {
+        {event.attendees.map((attendee) => {
           return (
-            <ListItem key={attender.id} disableGutters divider>
-              <ListItemButton>
+            <ListItem key={attendee.uid} disablePadding>
+              <ListItemButton component={Link} to={`/profile/${attendee.uid}`}>
                 <ListItemAvatar>
                   <Avatar
-                    alt={`${attender.name}`}
-                    src={`${attender.photoURL}`}
+                    alt={`${attendee.name}`}
+                    src={`${attendee.photoURL}`}
                   />
                 </ListItemAvatar>
-                <ListItemText primary={`${attender.name}`} />
+                <ListItemText primary={`${attendee.name}`} />
               </ListItemButton>
             </ListItem>
           );
