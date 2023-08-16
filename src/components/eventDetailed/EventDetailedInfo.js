@@ -25,11 +25,10 @@ function isMobileOrTablet() {
 window.isMobileOrTablet = window.isMobileOrTablet || isMobileOrTablet;
 
 const EventDetailedInfo = ({ event }) => {
+  const { latLon } = event.venue;
   const [open, setOpen] = useState(false);
   const [map, setMap] = useState(null);
   const mapContainerRef = useRef(null);
-
-  const deserializedDate = new Date(event.date);
 
   useEffect(() => {
     if (open) {
@@ -39,7 +38,7 @@ const EventDetailedInfo = ({ event }) => {
         const initializedMap = tt.map({
           key: "GgFavlAqzd0k4TxkgANMCXD23Kc4lF9S",
           container: mapContainerRef.current,
-          center: [28.44840377571382, 49.22599785318803],
+          center: [latLon?.lon, latLon?.lat],
           zoom: 15,
           style:
             "https://api.tomtom.com/style/1/style/21.1.0-*?map=basic_night&poi=poi_main",
@@ -53,15 +52,18 @@ const EventDetailedInfo = ({ event }) => {
           initializedMap.setPaintProperty("POI", "text-color", "#ffffff");
         });
         setMap(initializedMap);
-        // eslint-disable-next-line no-unused-vars
-        var marker = new tt.Marker({})
-          .setLngLat(initializedMap.getCenter())
-          .addTo(initializedMap);
       };
 
       initializeMap();
     }
-  }, [open]);
+  }, [open, latLon]);
+
+  useEffect(() => {
+    if (map) {
+      const marker = new tt.Marker().setLngLat(map.getCenter()).addTo(map);
+      marker.setLngLat(map.getCenter());
+    }
+  }, [map]);
 
   const handleDisplayingMap = () => setOpen(!open);
 
@@ -74,7 +76,7 @@ const EventDetailedInfo = ({ event }) => {
         </ListItem>
         <ListItem divider>
           <CalendarMonthIcon sx={{ marginRight: 2 }} />
-          <ListItemText primary={deserializedDate.toUTCString()} />
+          <ListItemText primary={new Date(event.date).toUTCString()} />
         </ListItem>
         <ListItem>
           <LocationOnIcon sx={{ marginRight: 2 }} />
@@ -83,16 +85,21 @@ const EventDetailedInfo = ({ event }) => {
             sx={{ marginLeft: 2 }}
             variant="outlined"
             onClick={handleDisplayingMap}
+            disabled={!latLon?.lon}
           >
             {open ? "Hide Map" : "Show Map"}
           </Button>
         </ListItem>
         {open && (
-          <ListItem >
+          <ListItem sx={{ justifyContent: "center" }}>
             <motion.div>
               <Box
                 ref={mapContainerRef}
-                sx={{ width: "860px", height: "300px", margin: "auto" }}
+                sx={{
+                  width: { xs: "85vw", md: "55vw" },
+                  height: "50vh",
+                  margin: "auto",
+                }}
               />
             </motion.div>
           </ListItem>

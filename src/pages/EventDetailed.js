@@ -1,14 +1,14 @@
 import React from "react";
-import EventDetailedHeader from "../eventDetailed/EventDetailedHeader";
-import EventDetailedChat from "../eventDetailed/EventDetailedChat";
-import EventDetailedInfo from "../eventDetailed/EventDetailedInfo";
-import EventDetailedSideBar from "../eventDetailed/EventDetailedSideBar";
+import EventDetailedHeader from "../components/eventDetailed/EventDetailedHeader";
+import EventDetailedChat from "../components/eventDetailed/EventDetailedChat";
+import EventDetailedInfo from "../components/eventDetailed/EventDetailedInfo";
+import EventDetailedSideBar from "../components/eventDetailed/EventDetailedSideBar";
 import { CircularProgress, Stack } from "@mui/material";
 import { useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { useFirestoreDoc } from "../../hooks/useFirestoreDoc";
-import { fetchEvent } from "../../app/features/event/eventReducer";
-import { listenToEventFromFirestore } from "../../app/firebase/firebaseService";
+import { useFirestoreDoc } from "../hooks/useFirestoreDoc";
+import { fetchEvent } from "../app/features/event/eventReducer";
+import { listenToEventFromFirestore } from "../app/firebase/firebaseService";
 
 const EventDetailed = () => {
   const { id } = useParams();

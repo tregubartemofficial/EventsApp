@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Autocomplete, TextField } from "@mui/material";
 
+const apiKey = "GgFavlAqzd0k4TxkgANMCXD23Kc4lF9S";
+
 const PlaceAutocomplete = ({
   label,
   id,
@@ -10,42 +12,54 @@ const PlaceAutocomplete = ({
   error,
   helperText,
   setFieldValue,
-  apiKey,
+  handleSelectedVenue,
 }) => {
   const [suggestions, setSuggestions] = useState([]);
 
   const handleInputChange = async (event) => {
     const inputValue = event.target.value;
 
-    if (!inputValue) return
-    axios
-      .get(
+    if (!inputValue) return;
+
+    try {
+      const response = await axios.get(
         `https://api.tomtom.com/search/2/search/${encodeURIComponent(
           inputValue
-        )}.json?key=${apiKey}&countrySet=UA`
-      )
-      .then((response) => {
-        const { results } = response.data;
-        const placeSuggestions = results.map((result, index) => ({
-          id: index.toString(),
-          label: result.address.freeformAddress,
-        }));
-        setSuggestions([ {id: 11, label: inputValue}, ...placeSuggestions]);
-      })
-      .catch((error) => {
-        console.error("Error fetching place suggestions:", error);
-      });
+        )}.json?key=${apiKey}&idxSet=POI&typeahead=true`
+      );
+
+      const { results } = response.data;
+
+      const placeSuggestions = results.map((result, index) => ({
+        id: index.toString(),
+        name: result.poi.name,
+        address: result.address.freeformAddress,
+        latLon: result.entryPoints[0].position,
+      }));
+      setSuggestions([{ id: 11, address: inputValue }, ...placeSuggestions]);
+    } catch (error) {
+      console.error("Error fetching place suggestions:", error);
+    }
   };
 
   return (
     <Autocomplete
       freeSolo
-      getOptionLabel={(option) => option.label || ""}
+      getOptionLabel={(option) => option.address || ""}
+      onChange={(e, value) => {
+        handleSelectedVenue(value);
+        setFieldValue(name, value?.address);
+      }}
       options={suggestions}
-      onChange={(e, value) => setFieldValue(name, value?.label)}
+      renderOption={(props, option) => {
+        return (
+          <li {...props} key={option.id}>
+            {option.address}
+          </li>
+        );
+      }}
       renderInput={(params) => (
         <TextField
-          sx={{ minWidth: 300 }}
           {...params}
           id={id}
           name={name}
@@ -55,7 +69,6 @@ const PlaceAutocomplete = ({
           onBlur={onBlur}
           helperText={helperText}
           error={error}
-          fullWidth
         />
       )}
     />
