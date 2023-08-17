@@ -60,7 +60,7 @@ const NavBar = () => {
   return (
     <>
       <AppBar position="static">
-        <Toolbar sx={{ justifyContent: "space-between" }}>
+        <Toolbar sx={{ justifyContent: "space-between" }} component='nav'>
           <StyledTitle
             variant="h6"
             component={Link}

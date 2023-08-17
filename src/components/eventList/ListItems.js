@@ -39,7 +39,7 @@ const ListItems = () => {
           {events.map((event) => {
             const deserializedDate = new Date(event.date);
             return (
-              <motion.div
+              <motion.li
                 whileHover={{
                   borderRadius: "10px",
                   backgroundColor: grey[900],
@@ -47,7 +47,7 @@ const ListItems = () => {
                 }}
                 key={event.id}
               >
-                <ListItem sx={{ flexDirection: "column", marginBottom: 1 }}>
+                <ListItem sx={{ flexDirection: "column", marginBottom: 1 }} component='section'>
                   <Stack
                     direction="row"
                     sx={{
@@ -114,7 +114,7 @@ const ListItems = () => {
                     </Button>
                   </Stack>
                 </ListItem>
-              </motion.div>
+              </motion.li>
             );
           })}
         </List>
