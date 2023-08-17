@@ -36,13 +36,12 @@ const RegisterForm = () => {
         password: "",
         name: "",
       },
-      onSubmit: ({ email, password, name }, { setSubmitting }) => {
+      onSubmit: ({ email, password, name }) => {
         registerWithEmailAndPassword(
           email,
           password,
           name,
           dispatch,
-          setSubmitting,
           setHelperText,
           navigate
         );
