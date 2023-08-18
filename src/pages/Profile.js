@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import ProfileContent from "../components/profile/ProfileContent";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,15 +15,20 @@ const Profile = () => {
   const { id } = useParams();
   const { currUser } = useSelector((state) => state.auth);
   const profile = useSelector((state) => state.profile);
-  (async () => {
-    try {
-      const profileUser = await getUserProfile(id);
-      dispatch(setProfile(profileUser));
-    } catch (error) {
-      dispatch(setNoProfile());
-    }
-  })();
   
+  useEffect(() => {
+    const fetchUserProfileData = async () => {
+      try {
+        const profileUser = await getUserProfile(id);
+        dispatch(setProfile(profileUser));
+      } catch (error) {
+        dispatch(setNoProfile());
+      }
+    };
+
+    fetchUserProfileData();
+  }, [id, dispatch]);
+
   const isAuthUserProfile = currUser?.uid === id;
 
   return (
