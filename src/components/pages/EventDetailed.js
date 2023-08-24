@@ -5,14 +5,15 @@ import EventDetailedInfo from "../eventDetailed/EventDetailedInfo";
 import EventDetailedSideBar from "../eventDetailed/EventDetailedSideBar";
 import { CircularProgress, Stack } from "@mui/material";
 import { useParams } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
-import { useFirestoreDoc } from "../../hooks/useFirestoreDoc";
-import { fetchEvent } from "../../app/features/event/eventReducer";
-import { listenToEventFromFirestore } from "../../app/firebase/firebaseService";
+import { useFirestoreDoc } from "../hooks/useFirestoreDoc";
+import { fetchEvent } from "../app/features/event/eventSlice";
+import { listenToEventFromFirestore } from "../app/firebase/firebaseService";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { useAppDispatch } from "../hooks/useAppDispatch";
 
 const EventDetailed = () => {
   const { id } = useParams();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useFirestoreDoc({
     query: () => listenToEventFromFirestore(id),
@@ -22,7 +23,7 @@ const EventDetailed = () => {
     deps: id,
   });
 
-  const event = useSelector((state) =>
+  const event = useAppSelector((state) =>
     state.events.events
   );
 
