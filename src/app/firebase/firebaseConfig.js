@@ -3,7 +3,6 @@ import "firebase/compat/firestore";
 import "firebase/compat/database";
 import "firebase/compat/auth";
 import "firebase/compat/storage";
-import getStorage from "redux-persist/es/storage/getStorage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCvwC97znSCQWZBJQqJgqh7l-63WmtgKY0",

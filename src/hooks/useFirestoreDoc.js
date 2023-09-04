@@ -10,6 +10,6 @@ export const useFirestoreDoc = ({ query, data, deps }) => {
     return () => {
       unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deps]);
 };

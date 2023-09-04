@@ -1,7 +1,7 @@
-import { ListItemText, Skeleton, Stack } from '@mui/material';
-import React from 'react'
+import React from "react";
+import { ListItemText, Skeleton, Stack } from "@mui/material";
 
-const EventSkeleton = () => {
+const EventSkeleton = ({detailed = false}) => {
   return (
     <Stack
       spacing={1}
@@ -13,8 +13,9 @@ const EventSkeleton = () => {
         <ListItemText primary={<Skeleton />} />
       </Stack>
       <Skeleton variant="rectangular" height={170} />
+      {detailed && <Skeleton variant="rectangular" height={170} /> }
     </Stack>
   );
-}
+};
 
-export default EventSkeleton
+export default EventSkeleton;

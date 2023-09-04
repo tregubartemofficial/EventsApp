@@ -1,7 +1,7 @@
 import { Avatar, Card, List, ListItem, ListItemAvatar, ListItemText, ListSubheader, Typography } from '@mui/material'
 import React from 'react'
 
-const EventDetailedChat = () => {
+const EventDetailedChat = ({ event }) => {
   return (
     <Card>
       <List

@@ -1,5 +1,9 @@
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import firebase from "../config/firebase";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import firebase from "./firebaseConfig";
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { signIn, updateAvatarPhoto } from "../features/auth/authSlice";
@@ -9,6 +13,7 @@ const db = firebase.firestore();
 const storage = firebase.storage();
 const auth = getAuth();
 
+// adds doc id to data
 export function dataFromSnapshot(snapshot) {
   if (!snapshot.exists) return undefined;
   const data = snapshot.data();
@@ -18,14 +23,29 @@ export function dataFromSnapshot(snapshot) {
   };
 }
 
-export function listenToEventsFromFirestore() {
-  return db.collection("events");
+// used in EventList
+export function listenToEventsFromFirestore(filter = "ALL") {
+  const user = auth.currentUser;
+  let eventRef = db.collection("events").orderBy("date");
+  if (user?.uid) {
+    switch (filter) {
+      case "GOING":
+        return eventRef.where("attendeesUid", "array-contains", user?.uid);
+      case "HOSTING":
+        return eventRef.where("uid", "==", user?.uid);
+      default:
+        return eventRef;
+    }
+  }
+  return eventRef;
 }
 
+// used in EventDetailed
 export function listenToEventFromFirestore(eventId) {
   return db.collection("events").doc(eventId);
 }
 
+// used in EventForm
 export function addEventToFirestore(event, currUser) {
   return db.collection("events").add({
     ...event,
@@ -40,6 +60,7 @@ export function addEventToFirestore(event, currUser) {
   });
 }
 
+// used in EventForm
 export function updateEventsInFirestore(event) {
   return db.collection("events").doc(event.id).update(event);
 }
@@ -51,7 +72,7 @@ export function setUserProfileData(user) {
     email: user.email,
     createdAt: Math.floor(Date.now() / 1000),
     uid: user.uid,
-    photoURL: user?.photoURL
+    photoURL: user?.photoURL,
   });
 }
 
@@ -79,7 +100,7 @@ export const logInWithEmailAndPassword = async (
 ) => {
   try {
     const { user } = await signInWithEmailAndPassword(auth, email, password);
-    const profile = await getUserProfile(user?.uid)
+    const profile = await getUserProfile(user?.uid);
     dispatch(
       signIn({
         email: user.email,
@@ -104,7 +125,11 @@ export const registerWithEmailAndPassword = async (
   navigate
 ) => {
   try {
-    const { user } = await createUserWithEmailAndPassword(auth, email, password);
+    const { user } = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     dispatch(
       signIn({
         email: user.email,
@@ -168,14 +193,15 @@ export async function updateUserAvatar(img, profile, dispatch) {
   }
   const imgRef = ref(storage, `userAvatars/${img.name}${profile.createdAt}`);
   await uploadBytes(imgRef, img);
-  const avatarURL = await getDownloadURL(imgRef)
-  updateUserProfile({photoURL: avatarURL})
+  const avatarURL = await getDownloadURL(imgRef);
+  updateUserProfile({ photoURL: avatarURL });
   dispatch(
     updateAvatarPhoto({
       photoURL: avatarURL,
     })
   );
 }
+
 // used in EventDetailed
 export async function updateAttendees(eventId, currUser, action) {
   try {
@@ -186,7 +212,8 @@ export async function updateAttendees(eventId, currUser, action) {
     // const userDoc = await userRef.get();
     // const userData = userDoc.data();
 
-    let updatedAttendees = [...eventData.attendees];
+    let updatedAttendees = [...eventData?.attendees];
+
 
     if (action === "add") {
       updatedAttendees.push({
@@ -201,7 +228,7 @@ export async function updateAttendees(eventId, currUser, action) {
     } else {
       throw new Error("Invalid action specified.");
     }
-    await eventRef.update({ attendees: updatedAttendees });
+    await eventRef.update({ attendees: updatedAttendees, attendeesUid: updatedAttendees.map(attendee => attendee.uid) });
   } catch (error) {
     console.error("Error updating attendees:", error);
   }

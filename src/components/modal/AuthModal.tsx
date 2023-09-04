@@ -14,13 +14,13 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { toggleModal } from "../../app/features/modal/modalSlice";
 import {
   logInWithEmailAndPassword,
   socialLogin,
 } from "../../app/firebase/firebaseService";
 import { signIn } from "../../app/features/auth/authSlice";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -47,7 +47,7 @@ const validationSchema = yup.object({
 
 const AuthModal = () => {
   const [helperText, setHelperText] = useState("");
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
     useFormik({
       initialValues: {

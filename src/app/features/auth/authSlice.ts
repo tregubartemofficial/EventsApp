@@ -5,6 +5,7 @@ type User = {
   photoURL: string | null;
   uid: string;
   displayName: string;
+  bio?: string;
 }
 
 type AuthState = {

@@ -15,8 +15,8 @@ import modalSlice from "./app/features/modal/modalSlice";
 import authSlice from "./app/features/auth/authSlice";
 import profileSlice from "./app/features/profile/profileSlice";
 
-const persistConfig = {
-  key: "root",
+const eventPersistConfig = {
+  key: "event",
   storage,
 };
 
@@ -25,12 +25,12 @@ const authPersistConfig = {
   storage: storage,
 };
 
-const persistedReducer = persistReducer(persistConfig, eventSlice.reducer);
+const persistedEventReducer = persistReducer(eventPersistConfig, eventSlice.reducer);
 const persistedAuthReducer = persistReducer(authPersistConfig, authSlice.reducer);
 
 export const store = configureStore({
   reducer: {
-    events: persistedReducer,
+    events: persistedEventReducer,
     auth: persistedAuthReducer,
     modals: modalSlice.reducer,
     profile: profileSlice.reducer,

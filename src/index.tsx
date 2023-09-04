@@ -9,9 +9,9 @@ import { store, persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
 import "./index.css";
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
+console.info("Symbol_observable", Symbol_observable);
+
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <BrowserRouter>
     <Provider store={store}>

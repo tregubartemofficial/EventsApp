@@ -12,7 +12,7 @@ import {
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Link } from "react-router-dom";
-import { fetchEvent } from "../../app/features/event/eventSlice";
+import { Event, fetchEvent } from "../../app/features/event/eventSlice";
 import { listenToEventsFromFirestore } from "../../app/firebase/firebaseService";
 import { useFirestoreCollection } from "../../hooks/useFirestoreCollection";
 import { grey } from "@mui/material/colors";
@@ -23,21 +23,21 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 
 const ListItems = () => {
   const dispatch = useAppDispatch();
-  const { events } = useAppSelector((state) => state.events)
+  const eventState = useAppSelector((state) => state.events);
 
   useFirestoreCollection({
-    query: () => listenToEventsFromFirestore(),
-    data: (events) => dispatch(fetchEvent(events)),
-    deps: dispatch,
+    query: () => listenToEventsFromFirestore(eventState.filter),
+    data: (events: Event[]) => dispatch(fetchEvent(events)),
+    deps: [dispatch, eventState.filter],
   });
 
   return (
     <>
-      {!events[0] ? (
+      {eventState.events.length === 0  ? (
         <EventSkeleton />
       ) : (
         <List sx={{ width: "100%", maxWidth: 500 }}>
-          {events.map((event) => {
+          {eventState.events.map((event) => {
             const deserializedDate = new Date(event.date);
             return (
               <motion.li
@@ -48,7 +48,10 @@ const ListItems = () => {
                 }}
                 key={event.id}
               >
-                <ListItem sx={{ flexDirection: "column", marginBottom: 1 }} component='section'>
+                <ListItem
+                  sx={{ flexDirection: "column", marginBottom: 1 }}
+                  component="section"
+                >
                   <Stack
                     direction="row"
                     sx={{
@@ -63,24 +66,28 @@ const ListItems = () => {
                       secondary={`Hosted by ${event.hostedBy}`}
                     />
                   </Stack>
-                  <Stack direction="row" sx={{ width: "100%" }}>
-                    <AccessTimeIcon />
-                    <ListItemText
-                      primary={deserializedDate.toLocaleDateString("de-DE")}
-                    />
-                    <LocationOnIcon />
-                    <ListItemText primary={event.venue.address} />
+                  <Stack direction="row" sx={{width: '100%'}} spacing={2}>
+                    <Stack direction="row">
+                      <AccessTimeIcon />
+                      <ListItemText
+                        primary={deserializedDate.toLocaleDateString("de-DE")}
+                      />
+                    </Stack>
+                    <Stack direction="row">
+                      <LocationOnIcon />
+                      <ListItemText primary={event.venue.address} />
+                    </Stack>
                   </Stack>
                   {event.attendees[0] && (
                     <Stack
                       direction="row"
                       sx={{
                         width: "100%",
-                        p: "1rem 0",
+                        py: 2,
                         bgcolor: grey[900],
                       }}
                     >
-                      <AvatarGroup sx={{ marginLeft: 2 }} max={5}>
+                      <AvatarGroup sx={{ marginLeft: 2 }} max={8}>
                         {event.attendees.map((attender) => (
                           <Avatar
                             alt={attender.name}
@@ -91,7 +98,6 @@ const ListItems = () => {
                       </AvatarGroup>
                     </Stack>
                   )}
-
                   <Stack
                     flexDirection="row"
                     justifyContent="start"

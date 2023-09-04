@@ -1,23 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-type Event = {
-  id: string;
+export type Event = {
+  uid: string;
+  id: string; // firestore id
   title: string;
   date: number;
   category: string;
   description: string;
-  city: {
-    address: string;
-    latLng: {
-      lat: number;
-      lng: number;
-    };
-  };
   venue: {
     address: string;
-    latLng: {
+    id: string;
+    name?: string;
+    latLon?: {
       lat: number;
-      lng: number;
+      lon: number;
     };
   };
   hostedBy: string;
@@ -27,71 +23,49 @@ type Event = {
     name: string;
     photoURL: string;
   }>;
-}
+};
+
+export type Filter = "ALL" | "GOING" | "HOSTING";
 
 type EventState = {
   events: Event[];
-}
+  filter: Filter;
+};
 
 const initialState: EventState = {
-  events: [
-    {
-      id: "",
-      title: "",
-      date: 4546452,
-      category: "",
-      description: "",
-      city: {
-        address: "",
-        latLng: {
-          lat: 40.7484405,
-          lng: -73.98566440000002,
-        },
-      },
-      venue: {
-        address: "",
-        latLng: {
-          lat: 40.7484405,
-          lng: -73.98566440000002,
-        },
-      },
-      hostedBy: "",
-      hostPhotoURL: "",
-      attendees: [
-        {
-          uid: "",
-          name: "",
-          photoURL: "",
-        },
-      ],
-    },
-  ],
+  events: [],
+  filter: "ALL",
 };
 
 export const eventSlice = createSlice({
   name: "event",
   initialState,
   reducers: {
-    addEvent: (state, action: PayloadAction<Event>) => {
-      state.events.push(action.payload);
+    addEvent: (state, { payload }: PayloadAction<Event>) => {
+      state.events.push(payload);
     },
-    updateEvent: (state, action: PayloadAction<Event>) => {
+    updateEvent: (state, { payload }: PayloadAction<Event>) => {
       state.events = [
-        ...state.events.filter((event) => event.id !== action.payload.id),
-        action.payload,
+        ...state.events.filter((event) => event.uid !== payload.uid),
+        payload,
       ];
     },
-    deleteEvent: (state, action: PayloadAction<string>) => {
-      state.events = [
-        ...state.events.filter((event) => event.id !== action.payload),
-      ];
+    deleteEvent: (state, { payload }: PayloadAction<string>) => {
+      state.events = [...state.events.filter((event) => event.uid !== payload)];
     },
-    fetchEvent: (state, action: PayloadAction<Event[]>) => {
-      state.events = action.payload;
+    fetchEvent: (state, { payload }: PayloadAction<Event[]>) => {
+      if (Array.isArray(payload)) {
+        state.events = payload;
+      } else {
+        state.events = [payload];
+      }
+    },
+    setFilter: (state, { payload }: PayloadAction<Filter>) => {
+      state.filter = payload;
     },
   },
 });
 
-export const { addEvent, updateEvent, deleteEvent, fetchEvent } =
+export const { addEvent, updateEvent, deleteEvent, fetchEvent, setFilter } =
   eventSlice.actions;
 export default eventSlice;
