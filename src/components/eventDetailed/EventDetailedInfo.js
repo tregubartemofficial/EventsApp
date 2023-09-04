@@ -71,18 +71,18 @@ const EventDetailedInfo = ({ event }) => {
     <Card>
       <List>
         <ListItem divider>
-          <InfoOutlinedIcon sx={{ marginRight: 2 }} />
+          <InfoOutlinedIcon sx={{ mr: 2 }} />
           <ListItemText primary={event.description} />
         </ListItem>
         <ListItem divider>
-          <CalendarMonthIcon sx={{ marginRight: 2 }} />
+          <CalendarMonthIcon sx={{ mr: 2 }} />
           <ListItemText primary={new Date(event.date).toUTCString()} />
         </ListItem>
         <ListItem>
-          <LocationOnIcon sx={{ marginRight: 2 }} />
+          <LocationOnIcon sx={{ mr: 2 }} />
           <ListItemText primary={event.venue?.address} />
           <Button
-            sx={{ marginLeft: 2 }}
+            sx={{ ml: 2 }}
             variant="outlined"
             onClick={handleDisplayingMap}
             disabled={!latLon?.lon}

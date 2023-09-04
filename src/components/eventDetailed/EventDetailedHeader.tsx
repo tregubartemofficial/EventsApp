@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Button,
   Card,
@@ -6,18 +7,20 @@ import {
   Typography,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import React from "react";
 import { Link } from "react-router-dom";
 import { updateAttendees } from "../../app/firebase/firebaseService";
 import { toggleModal } from "../../app/features/modal/modalSlice";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { Event } from "../../app/features/event/eventSlice";
 
-const EventDetailedHeader = ({ event }) => {
+type EventDetailedHeaderProps = {event: Event}
+
+const EventDetailedHeader = ({ event }: EventDetailedHeaderProps) => {
   const deserializedDate = new Date(event.date);
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const { currUser } = useAppSelector((state) => state.auth);
-  
+
   return (
     <Card>
       <CardContent sx={{ bgcolor: grey[600], minHeight: 100 }}>
@@ -36,7 +39,7 @@ const EventDetailedHeader = ({ event }) => {
               <Button
                 variant="contained"
                 sx={{ ml: "5px" }}
-                onClick={() => updateAttendees(event.id, currUser, "add")}
+                onClick={() => updateAttendees(event.id, currUser, "ADD")}
               >
                 Join this event
               </Button>
@@ -44,7 +47,7 @@ const EventDetailedHeader = ({ event }) => {
               <Button
                 variant="contained"
                 sx={{ ml: "5px" }}
-                onClick={() => updateAttendees(event.id, currUser, "remove")}
+                onClick={() => updateAttendees(event.id, currUser, "REMOVE")}
               >
                 Cancel my place
               </Button>
@@ -73,7 +76,12 @@ const EventDetailedHeader = ({ event }) => {
             )}
           </>
         ) : (
-          <Button variant="contained" onClick={() => dispatch(toggleModal('auth'))} >Log in to join event</Button>
+          <Button
+            variant="contained"
+            onClick={() => dispatch(toggleModal("auth"))}
+          >
+            Log in to join event
+          </Button>
         )}
       </CardActions>
     </Card>

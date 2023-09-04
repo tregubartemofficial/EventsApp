@@ -15,12 +15,13 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { toggleModal } from "../../app/features/modal/modalSlice";
 import AuthModal from "../modal/AuthModal";
 import { signOut } from "../../app/features/auth/authSlice";
 import PhoneNav from "./PhoneNav";
 import { Logout, Person, Settings } from "@mui/icons-material";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -36,9 +37,9 @@ const StyledBtn = styled(Button)({ my: 2, color: "white", display: "block" });
 
 const NavBar = () => {
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const { isAuth, currUser } = useSelector((state) => state.auth);
+  const { isAuth, currUser } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const handleSignIn = () => {
     dispatch(toggleModal("auth"));

@@ -215,13 +215,13 @@ export async function updateAttendees(eventId, currUser, action) {
     let updatedAttendees = [...eventData?.attendees];
 
 
-    if (action === "add") {
+    if (action === "ADD") {
       updatedAttendees.push({
         name: currUser.displayName,
         uid: currUser.uid,
         photoURL: currUser.photoURL,
       });
-    } else if (action === "remove") {
+    } else if (action === "REMOVE") {
       updatedAttendees = updatedAttendees.filter(
         (attendee) => attendee.uid !== currUser.uid
       );

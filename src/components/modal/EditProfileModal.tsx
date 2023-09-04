@@ -10,9 +10,9 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useDispatch } from "react-redux";
 import { toggleModal } from "../../app/features/modal/modalSlice";
 import { updateUserAvatar, updateUserProfile } from "../../app/firebase/firebaseService";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -30,11 +30,19 @@ const validationSchema = yup.object({
   bio: yup.string(),
 });
 
-const EditProfileModal = ({ profile }) => {
-  const dispatch = useDispatch();
-  const handleAvatar = (event) => {
-    updateUserAvatar(event.target.files["0"], profile, dispatch);
-  }
+type EditProfileModalProps = { profile: any };
+
+const EditProfileModal = ({ profile }: EditProfileModalProps) => {
+  const dispatch = useAppDispatch();
+  
+  const handleAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files && event.target.files[0];
+    if (selectedFile) {
+      updateUserAvatar(selectedFile, profile, dispatch);
+    }
+  };
+
+
   const { values, errors, touched, handleChange, handleBlur, handleSubmit, } =
     useFormik({
       initialValues: {

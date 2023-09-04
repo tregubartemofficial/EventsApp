@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Avatar,
   Card,
@@ -8,10 +9,12 @@ import {
   ListItemText,
   ListSubheader,
 } from "@mui/material";
-import React from "react";
 import { Link } from "react-router-dom";
+import { Event } from "../../app/features/event/eventSlice";
 
-const EventDetailedSideBar = ({event}) => {
+type EventDetailedSideBarProps = { event: Event };
+
+const EventDetailedSideBar = ({ event }: EventDetailedSideBarProps) => {
   return (
     <Card>
       <List

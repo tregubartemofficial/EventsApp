@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { List, ListItemButton, Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
+import { ProfileState } from "../../app/features/profile/profileSlice";
 
-const ProfileContent = ({profile}) => {
+type ProfileContentProps = { profile: ProfileState };
+
+const ProfileContent = ({profile}: ProfileContentProps) => {
   const [showEvents, setShowEvents] = useState(true);
 
   const handleItemClick = () => {

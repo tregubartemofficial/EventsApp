@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-type ProfileState = {
+export type ProfileState = {
   error: boolean;
   createdAt: number;
   displayName: string;

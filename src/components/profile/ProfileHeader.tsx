@@ -1,20 +1,31 @@
 import React, { useState } from "react";
-import { Alert, Avatar, Button, Card, Snackbar, Stack, Typography } from "@mui/material";
+import {
+  Alert,
+  Avatar,
+  Button,
+  Card,
+  Snackbar,
+  Stack,
+  Typography,
+} from "@mui/material";
 import EditProfileModal from "../modal/EditProfileModal";
-import { useDispatch } from "react-redux";
 import { toggleModal } from "../../app/features/modal/modalSlice";
 import copy from "clipboard-copy";
 import { grey } from "@mui/material/colors";
+import { ProfileState } from "../../app/features/profile/profileSlice";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
 
-const ProfileHeader = ({ profile, isAuthUserProfile }) => {
-  const dispatch = useDispatch();
+type ProfileHeaderProps = { profile: ProfileState; isAuthUserProfile: boolean };
+
+const ProfileHeader = ({ profile, isAuthUserProfile }: ProfileHeaderProps) => {
+  const dispatch = useAppDispatch();
   const [openMessage, setOpenMessage] = useState(false);
 
   const handleCopyURL = () => {
-    setOpenMessage(true)
-    copy(window.location.href)
+    setOpenMessage(true);
+    copy(window.location.href);
   };
-  
+
   return (
     <>
       <Card sx={{ marginTop: 2, marginBottom: 2 }}>
@@ -69,9 +80,13 @@ const ProfileHeader = ({ profile, isAuthUserProfile }) => {
               open={openMessage}
               autoHideDuration={2500}
               onClose={() => setOpenMessage(false)}
-              anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             >
-              <Alert color="success" severity="success" sx={{bgcolor:grey[900]}}>
+              <Alert
+                color="success"
+                severity="success"
+                sx={{ bgcolor: grey[900] }}
+              >
                 Profile URL copied
               </Alert>
             </Snackbar>
