@@ -5,6 +5,7 @@ export type ProfileState = {
   createdAt: number;
   displayName: string;
   email: string;
+  uid: string;
   photoURL?: string;
   followers?: string;
   following?: string;
@@ -15,6 +16,7 @@ const initialState: ProfileState = {
   createdAt: new Date().getTime(),
   displayName: "",
   email: "",
+  uid: "",
   photoURL: "",
   followers: '',
   following: '',
@@ -25,6 +27,7 @@ const profileSlice = createSlice({
   initialState,
   reducers: {
     setProfile: (state, { payload }: PayloadAction<ProfileState>) => {
+      state.uid = payload.uid;
       state.createdAt = payload.createdAt;
       state.displayName = payload.displayName;
       state.email = payload.email;

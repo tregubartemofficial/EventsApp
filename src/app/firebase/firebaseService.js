@@ -23,13 +23,15 @@ export function dataFromSnapshot(snapshot) {
   };
 }
 
-// used in EventList
-export function listenToEventsFromFirestore(filter = "ALL") {
+// used in EventList and ProfileContent
+export function listenToEventsFromFirestore(filter = "ALL", profileUid) {
   const user = auth.currentUser;
   let eventRef = db.collection("events").orderBy("date");
   if (user?.uid) {
     switch (filter) {
       case "GOING":
+        if (profileUid)
+          return eventRef.where("attendeesUid", "array-contains", profileUid);
         return eventRef.where("attendeesUid", "array-contains", user?.uid);
       case "HOSTING":
         return eventRef.where("uid", "==", user?.uid);
@@ -214,7 +216,6 @@ export async function updateAttendees(eventId, currUser, action) {
 
     let updatedAttendees = [...eventData?.attendees];
 
-
     if (action === "ADD") {
       updatedAttendees.push({
         name: currUser.displayName,
@@ -228,7 +229,10 @@ export async function updateAttendees(eventId, currUser, action) {
     } else {
       throw new Error("Invalid action specified.");
     }
-    await eventRef.update({ attendees: updatedAttendees, attendeesUid: updatedAttendees.map(attendee => attendee.uid) });
+    await eventRef.update({
+      attendees: updatedAttendees,
+      attendeesUid: updatedAttendees.map((attendee) => attendee.uid),
+    });
   } catch (error) {
     console.error("Error updating attendees:", error);
   }

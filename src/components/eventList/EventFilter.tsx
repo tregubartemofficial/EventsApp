@@ -21,7 +21,7 @@ const EventFilter = () => {
           <ListItemText primary="Filters" />
           {open ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
-        <Collapse in={open} timeout="auto" unmountOnExit>
+        <Collapse in={open} timeout="auto">
           <ListItemButton
             divider={true}
             onClick={() => dispatch(setFilter("ALL"))}
