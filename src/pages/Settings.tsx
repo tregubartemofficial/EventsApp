@@ -21,6 +21,8 @@ const Settings = () => {
       </Alert>
     );
   }
+
+  return <div>Settings</div>;
 };
 
 export default Settings;
