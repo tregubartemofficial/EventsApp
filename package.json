@@ -34,7 +34,7 @@
     "redux-persist": "^6.0.0",
     "symbol-observable": "^4.0.0",
     "transliteration": "^2.3.5",
-    "typescript": "^5.1.6",
+    "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
     "yup": "^1.2.0"
   },
