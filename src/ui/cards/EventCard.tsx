@@ -14,14 +14,21 @@ import { Link } from "react-router-dom";
 import { grey } from "@mui/material/colors";
 import { Event } from "../../app/features/event/eventSlice";
 
-type EventCardProps = { event: Event; border?: boolean };
+type EventCardProps = { event: Event; isProfile?: boolean };
 
-const EventCard = ({ event, border }: EventCardProps) => {
+const EventCard = ({ event, isProfile = false }: EventCardProps) => {
   const deserializedDate = new Date(event.date);
   return (
     <ListItem
-      sx={{ flexDirection: "column", marginBottom: 1, border: border ? `1px solid ${grey[900]}` : 0}}
-      component="section"
+      sx={{
+        flexDirection: "column",
+        marginBottom: 1,
+        border: isProfile ? `1px solid ${grey[900]}` : 0,
+        cursor: isProfile ? "pointer" : "default",
+        color: isProfile ? "white" : "inherit",
+      }}
+      component={isProfile ? Link : "section"}
+      to={`/events/${event.id}`}
     >
       <Stack
         direction="row"
@@ -72,17 +79,19 @@ const EventCard = ({ event, border }: EventCardProps) => {
       <Stack flexDirection="row" justifyContent="start" sx={{ width: "100%" }}>
         <ListItemText primary={event.description} />
       </Stack>
-      <Stack flexDirection="row" justifyContent="end" sx={{ width: "100%" }}>
-        <Button
-          variant="contained"
-          color="info"
-          sx={{ m: 1 }}
-          component={Link}
-          to={`/events/${event.id}`}
-        >
-          View
-        </Button>
-      </Stack>
+      {!isProfile && (
+        <Stack flexDirection="row" justifyContent="end" sx={{ width: "100%" }}>
+          <Button
+            variant="contained"
+            color="info"
+            sx={{ m: 1 }}
+            component={Link}
+            to={`/events/${event.id}`}
+          >
+            View
+          </Button>
+        </Stack>
+      )}
     </ListItem>
   );
 };

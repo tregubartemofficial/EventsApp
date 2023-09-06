@@ -45,8 +45,18 @@ const ProfileHeader = ({ profile, isAuthUserProfile }: ProfileHeaderProps) => {
               />
               <Typography>{profile?.displayName}</Typography>
             </Stack>
-            <Typography variant="h6">{profile.followers} Followers</Typography>
-            <Typography variant="h6">{profile.following} Following</Typography>
+            <Stack>
+              <Typography variant="h5">{profile.followers}</Typography>
+              <Typography variant="h6" color={grey[700]}>
+                Followers
+              </Typography>
+            </Stack>
+            <Stack>
+              <Typography variant="h5">{profile.followers}</Typography>
+              <Typography variant="h6" color={grey[700]}>
+                Following
+              </Typography>
+            </Stack>
           </Stack>
           <Stack flexDirection="row" justifyContent="space-around">
             {isAuthUserProfile && (
