@@ -103,7 +103,7 @@ const EventForm = () => {
       {!isAuth && (
         <Alert severity="warning" sx={{ marginTop: 2 }}>
           <AlertTitle>Warning</AlertTitle>
-          You should be authorized to create events!{" "}
+          You should be authorized to create events!
           <strong
             style={{ cursor: "pointer" }}
             onClick={() => dispatch(toggleModal("auth"))}

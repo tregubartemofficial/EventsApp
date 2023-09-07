@@ -3,8 +3,6 @@ import { List } from "@mui/material";
 import { Event, fetchEvent } from "../../app/features/event/eventSlice";
 import { listenToEventsFromFirestore } from "../../app/firebase/firebaseService";
 import { useFirestoreCollection } from "../../hooks/useFirestoreCollection";
-import { grey } from "@mui/material/colors";
-import { motion } from "framer-motion";
 import EventSkeleton from "./EventSkeleton";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -27,18 +25,7 @@ const ListItems = () => {
       ) : (
         <List sx={{ width: "100%", maxWidth: 500 }}>
           {eventState.events.map((event) => {
-            return (
-              <motion.li
-                whileHover={{
-                  borderRadius: "10px",
-                  backgroundColor: grey[900],
-                  transition: { duration: 0.2 },
-                }}
-                key={event.id}
-              >
-                <EventCard event={event} />
-              </motion.li>
-            );
+            return <EventCard event={event} key={event.id} />;
           })}
         </List>
       )}

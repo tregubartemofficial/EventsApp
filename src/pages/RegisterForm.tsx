@@ -1,10 +1,23 @@
 import React, { useState } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { Button, FormHelperText, Stack, TextField } from "@mui/material";
-import { useDispatch } from "react-redux";
+import {
+  Button,
+  Card,
+  Divider,
+  FormHelperText,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import GoogleIcon from "@mui/icons-material/Google";
 import { useNavigate } from "react-router";
-import { registerWithEmailAndPassword } from "../app/firebase/firebaseService";
+import {
+  registerWithEmailAndPassword,
+  socialLogin,
+} from "../app/firebase/firebaseService";
+import { useAppDispatch } from "../hooks/useAppDispatch";
 
 const validationSchema = yup.object({
   email: yup
@@ -28,7 +41,7 @@ const validationSchema = yup.object({
 const RegisterForm = () => {
   const [helperText, setHelperText] = useState("");
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
     useFormik({
       initialValues: {
@@ -49,7 +62,12 @@ const RegisterForm = () => {
       validationSchema: validationSchema,
     });
   return (
-    <Stack flexDirection="column">
+    <Stack
+      flexDirection="column"
+      component={Card}
+      sx={{ margin: "auto", maxWidth: 900, py: 5, px: 3, mt: 5 }}
+    >
+      <Typography textAlign='center' variant="h6">CREATE ACCOUNT</Typography>
       <form onSubmit={handleSubmit}>
         <TextField
           type="email"
@@ -86,9 +104,20 @@ const RegisterForm = () => {
           error={Boolean(touched.name && errors.name)}
           helperText={touched.name && errors.name}
         />
-        <FormHelperText error={true} sx={{fontSize:'1rem'}}>{helperText}</FormHelperText>
-        <Button type="submit">Register</Button>
+        <FormHelperText error={true} sx={{ fontSize: "1rem" }}>
+          {helperText}
+        </FormHelperText>
+        <Button type="submit">REGISTER</Button>
       </form>
+      <Divider sx={{ my: 1 }}>Or</Divider>
+      <IconButton
+        sx={{ borderRadius: 0 }}
+        onClick={() => {
+          socialLogin(dispatch);
+        }}
+      >
+        <GoogleIcon />
+      </IconButton>
     </Stack>
   );
 };

@@ -4,6 +4,7 @@ import {
   Avatar,
   Button,
   Card,
+  Grow,
   Snackbar,
   Stack,
   Typography,
@@ -28,81 +29,84 @@ const ProfileHeader = ({ profile, isAuthUserProfile }: ProfileHeaderProps) => {
 
   return (
     <>
-      <Card sx={{ marginTop: 2, marginBottom: 2 }}>
-        <Stack sx={{ marginTop: 2, marginBottom: 2 }}>
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="space-around"
-            alignItems="center"
-            sx={{ marginBottom: 2 }}
-          >
-            <Stack alignItems="center">
-              <Avatar
-                alt={profile?.displayName}
-                src={profile?.photoURL}
-                sx={{ height: 80, width: 80 }}
-              />
-              <Typography>{profile?.displayName}</Typography>
+      <Grow in={true}>
+        <Card sx={{ marginTop: 2, marginBottom: 2 }}>
+          <Stack sx={{ marginTop: 2, marginBottom: 2 }}>
+            <Stack
+              direction="row"
+              spacing={2}
+              justifyContent="space-around"
+              alignItems="center"
+              sx={{ marginBottom: 2 }}
+            >
+              <Stack alignItems="center">
+                <Avatar
+                  alt={profile?.displayName}
+                  src={profile?.photoURL}
+                  sx={{ height: 80, width: 80 }}
+                />
+                <Typography>{profile?.displayName}</Typography>
+              </Stack>
+              <Stack>
+                <Typography variant="h5">{profile.followers}</Typography>
+                <Typography variant="h6" color={grey[700]}>
+                  Followers
+                </Typography>
+              </Stack>
+              <Stack>
+                <Typography variant="h5">{profile.followers}</Typography>
+                <Typography variant="h6" color={grey[700]}>
+                  Following
+                </Typography>
+              </Stack>
             </Stack>
-            <Stack>
-              <Typography variant="h5">{profile.followers}</Typography>
-              <Typography variant="h6" color={grey[700]}>
-                Followers
-              </Typography>
-            </Stack>
-            <Stack>
-              <Typography variant="h5">{profile.followers}</Typography>
-              <Typography variant="h6" color={grey[700]}>
-                Following
-              </Typography>
-            </Stack>
-          </Stack>
-          <Stack flexDirection="row" justifyContent="space-around">
-            {isAuthUserProfile && (
+            <Stack flexDirection="row" justifyContent="space-around">
+              {isAuthUserProfile && (
+                <Button
+                  onClick={() => dispatch(toggleModal("editProfile"))}
+                  variant="contained"
+                  sx={{ width: "45%" }}
+                  disabled={profile.error}
+                >
+                  Edit Profile
+                </Button>
+              )}
+              {!isAuthUserProfile && (
+                <Button
+                  variant="contained"
+                  sx={{ width: "45%" }}
+                  disabled={profile.error}
+                >
+                  Follow
+                </Button>
+              )}
               <Button
-                onClick={() => dispatch(toggleModal("editProfile"))}
                 variant="contained"
                 sx={{ width: "45%" }}
                 disabled={profile.error}
+                onClick={() => handleCopyURL()}
               >
-                Edit Profile
+                Share profile
               </Button>
-            )}
-            {!isAuthUserProfile && (
-              <Button
-                variant="contained"
-                sx={{ width: "45%" }}
-                disabled={profile.error}
+              <Snackbar
+                open={openMessage}
+                autoHideDuration={2500}
+                onClose={() => setOpenMessage(false)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               >
-                Follow
-              </Button>
-            )}
-            <Button
-              variant="contained"
-              sx={{ width: "45%" }}
-              disabled={profile.error}
-              onClick={() => handleCopyURL()}
-            >
-              Share profile
-            </Button>
-            <Snackbar
-              open={openMessage}
-              autoHideDuration={2500}
-              onClose={() => setOpenMessage(false)}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            >
-              <Alert
-                color="success"
-                severity="success"
-                sx={{ bgcolor: grey[900] }}
-              >
-                Profile URL copied
-              </Alert>
-            </Snackbar>
+                <Alert
+                  color="success"
+                  severity="success"
+                  sx={{ bgcolor: grey[900] }}
+                >
+                  Profile URL copied
+                </Alert>
+              </Snackbar>
+            </Stack>
           </Stack>
-        </Stack>
-      </Card>
+        </Card>
+      </Grow>
+
       <EditProfileModal profile={profile} />
     </>
   );

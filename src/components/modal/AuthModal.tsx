@@ -30,6 +30,7 @@ const StyledTitle = styled(Typography)({
   letterSpacing: ".3rem",
   color: "inherit",
   textDecoration: "none",
+  textAlign: "center",
 });
 
 const validationSchema = yup.object({
@@ -91,8 +92,22 @@ const AuthModal = () => {
           <FormHelperText error={true} sx={{ fontSize: "1rem" }}>
             {helperText}
           </FormHelperText>
-          <Button type="submit">Sign In</Button>
+          <Button type="submit" variant="contained">
+            Sign In
+          </Button>
         </form>
+        <Typography sx={{ textAlign: "center", mt: 1 }}>
+          Don't have an account?
+          <Button
+            component={Link}
+            to="/register"
+            onClick={() => dispatch(toggleModal("auth"))}
+            size="small"
+          >
+            Log In
+          </Button>
+        </Typography>
+        <Divider sx={{ my: 1 }}>Or</Divider>
         <IconButton
           sx={{ borderRadius: 0 }}
           onClick={() => {
@@ -102,15 +117,6 @@ const AuthModal = () => {
         >
           <GoogleIcon />
         </IconButton>
-        <Divider />
-        <Button
-          component={Link}
-          to="/register"
-          sx={{ marginTop: 1 }}
-          onClick={() => dispatch(toggleModal("auth"))}
-        >
-          Log In
-        </Button>
       </Stack>
     </ModalWrapper>
   );

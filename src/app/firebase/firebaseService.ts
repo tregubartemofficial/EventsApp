@@ -165,32 +165,31 @@ export const registerWithEmailAndPassword = async (
   }
 };
 
-// used in AuthModal to reg logIn ands singIn
+// used in AuthModal and RegisterForm to register and singIn
 export async function socialLogin(dispatch: AppDispatch) {
   const provider = new firebase.auth.GoogleAuthProvider();
   try {
     const result = await firebase.auth().signInWithPopup(provider);
-    console.log(result);
-    // if (result.user) {
-    //   if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
-    //     await setUserProfileData({
-    //       uid: result.user.uid,
-    //       photoURL: result.user["_delegate"]?.photoURL,
-    //       displayName: result.user?.displayName,
-    //       email: result.user.email,
-    //       createdAt: Math.floor(Date.now() / 1000),
-    //     });
-    //   }
-    //   const profile:any = await getUserProfile(result.user["_delegate"].uid);
-    //   dispatch(
-    //     signIn({
-    //       email: profile.email,
-    //       photoURL: result.user["_delegate"]?.photoURL,
-    //       uid: profile.uid,
-    //       displayName: profile.displayName,
-    //     })
-    //   );
-    // }
+    if (result.user) {
+      if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
+        await setUserProfileData({
+          uid: result.user.uid,
+          photoURL: result.user.photoURL,
+          displayName: result.user?.displayName,
+          email: result.user.email,
+          createdAt: Math.floor(Date.now() / 1000),
+        });
+      }
+      const profile:any = await getUserProfile(result.user.uid);
+      dispatch(
+        signIn({
+          email: profile.email,
+          photoURL: result.user?.photoURL,
+          uid: profile.uid,
+          displayName: profile.displayName,
+        })
+      );
+    }
   } catch (error: any) {
     console.log(error.message);
   }
