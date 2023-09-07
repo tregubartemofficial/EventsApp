@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-type ModalState = {
+export type ModalState = {
   editProfile: boolean;
   auth: boolean;
 };
