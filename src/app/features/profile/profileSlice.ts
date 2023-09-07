@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { User } from "../auth/authSlice";
 
 export type ProfileState = {
   error: boolean;
@@ -26,12 +27,12 @@ const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    setProfile: (state, { payload }: PayloadAction<ProfileState>) => {
-      state.uid = payload.uid;
-      state.createdAt = payload.createdAt;
-      state.displayName = payload.displayName;
-      state.email = payload.email;
-      state.photoURL = payload.photoURL;
+    setProfile: (state, { payload }: PayloadAction<User>) => {
+      state.uid = payload.uid!;
+      state.createdAt = payload.createdAt!;
+      state.displayName = payload.displayName!;
+      state.email = payload.email!;
+      state.photoURL = payload.photoURL!;
       state.error = false;
     },
     setNoProfile: (state) => {

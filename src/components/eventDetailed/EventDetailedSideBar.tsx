@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Event } from "../../app/features/event/eventSlice";
+import { grey } from "@mui/material/colors";
 
 type EventDetailedSideBarProps = { event: Event };
 
@@ -19,11 +20,15 @@ const EventDetailedSideBar = ({ event }: EventDetailedSideBarProps) => {
     <Card>
       <List
         subheader={
-          <ListSubheader component="h6" id="subheader">
+          <ListSubheader
+            component="h6"
+            id="subheader"
+            sx={{ bgcolor: grey[900] }}
+          >
             {event.attendees.length} People going
           </ListSubheader>
         }
-        sx={{ minWidth: 360, bgcolor: "background.paper" }}
+        sx={{ minWidth: 360, bgcolor: grey[900] }}
       >
         {event.attendees.map((attendee) => {
           return (

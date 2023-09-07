@@ -6,15 +6,18 @@ import {
 import firebase from "./firebaseConfig";
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { signIn, updateAvatarPhoto } from "../features/auth/authSlice";
+import { User, signIn, updateAvatarPhoto } from "../features/auth/authSlice";
 import { toggleModal } from "../features/modal/modalSlice";
+import { Event, Filter } from "../features/event/eventSlice";
+import { AppDispatch } from "../../store";
+import { NavigateFunction } from "react-router";
 
 const db = firebase.firestore();
 const storage = firebase.storage();
 const auth = getAuth();
 
 // adds doc id to data
-export function dataFromSnapshot(snapshot) {
+export function dataFromSnapshot(snapshot: any) {
   if (!snapshot.exists) return undefined;
   const data = snapshot.data();
   return {
@@ -24,7 +27,10 @@ export function dataFromSnapshot(snapshot) {
 }
 
 // used in EventList and ProfileContent
-export function listenToEventsFromFirestore(filter = "ALL", profileUid) {
+export function listenToEventsFromFirestore(
+  filter: Filter = "ALL",
+  profileUid?: string
+) {
   const user = auth.currentUser;
   let eventRef = db.collection("events").orderBy("date");
   if (user?.uid) {
@@ -43,12 +49,12 @@ export function listenToEventsFromFirestore(filter = "ALL", profileUid) {
 }
 
 // used in EventDetailed
-export function listenToEventFromFirestore(eventId) {
+export function listenToEventFromFirestore(eventId: string) {
   return db.collection("events").doc(eventId);
 }
 
 // used in EventForm
-export function addEventToFirestore(event, currUser) {
+export function addEventToFirestore(event: Event, currUser: User) {
   return db.collection("events").add({
     ...event,
     hostedBy: currUser.displayName,
@@ -63,23 +69,23 @@ export function addEventToFirestore(event, currUser) {
 }
 
 // used in EventForm
-export function updateEventsInFirestore(event) {
+export function updateEventsInFirestore(event: Event) {
   return db.collection("events").doc(event.id).update(event);
 }
 
 // used in registration functions
-export function setUserProfileData(user) {
+export function setUserProfileData(user: any) {
   return setDoc(doc(db, "users", user.uid), {
     displayName: user.displayName,
     email: user.email,
-    createdAt: Math.floor(Date.now() / 1000),
+    createdAt: user.createdAt,
     uid: user.uid,
     photoURL: user?.photoURL,
   });
 }
 
 // used in signIn and in Profile
-export async function getUserProfile(userId) {
+export async function getUserProfile(userId: string): Promise<User> {
   const userRef = doc(db, "users", userId);
   return new Promise((resolve, reject) => {
     onSnapshot(userRef, (doc) => {
@@ -95,17 +101,17 @@ export async function getUserProfile(userId) {
 
 // used in AuthModal
 export const logInWithEmailAndPassword = async (
-  email,
-  password,
-  dispatch,
-  setHelperText
+  email: string,
+  password: string,
+  dispatch: AppDispatch,
+  setHelperText: React.Dispatch<React.SetStateAction<string>>
 ) => {
   try {
     const { user } = await signInWithEmailAndPassword(auth, email, password);
-    const profile = await getUserProfile(user?.uid);
+    const profile: any = await getUserProfile(user?.uid);
     dispatch(
       signIn({
-        email: user.email,
+        email: profile.email,
         photoURL: profile?.photoURL,
         uid: user.uid,
         displayName: profile.displayName,
@@ -119,12 +125,12 @@ export const logInWithEmailAndPassword = async (
 
 // used in RegisterForm
 export const registerWithEmailAndPassword = async (
-  email,
-  password,
-  name,
-  dispatch,
-  setHelperText,
-  navigate
+  email: string,
+  password: string,
+  name: string,
+  dispatch: AppDispatch,
+  setHelperText: React.Dispatch<React.SetStateAction<string>>,
+  navigate: NavigateFunction
 ) => {
   try {
     const { user } = await createUserWithEmailAndPassword(
@@ -132,19 +138,27 @@ export const registerWithEmailAndPassword = async (
       email,
       password
     );
-    dispatch(
-      signIn({
-        email: user.email,
-        photoURL: null,
+
+    if (user.email !== null) {
+      dispatch(
+        signIn({
+          email: user.email,
+          photoURL: user?.photoURL,
+          uid: user.uid,
+          displayName: name,
+        })
+      );
+
+      const userProfileData: User = {
         uid: user.uid,
+        photoURL: "",
         displayName: name,
-      })
-    );
-    await setUserProfileData({
-      ...user,
-      photoURL: null,
-      displayName: name,
-    });
+        email: user.email,
+        createdAt: Math.floor(Date.now() / 1000),
+      };
+      await setUserProfileData(userProfileData);
+    }
+
     navigate("/events");
   } catch (error) {
     setHelperText(`Problem with username or password`);
@@ -152,39 +166,48 @@ export const registerWithEmailAndPassword = async (
 };
 
 // used in AuthModal to reg logIn ands singIn
-export async function socialLogin(dispatch, signIn) {
+export async function socialLogin(dispatch: AppDispatch) {
   const provider = new firebase.auth.GoogleAuthProvider();
   try {
     const result = await firebase.auth().signInWithPopup(provider);
-    if (result.additionalUserInfo.isNewUser) {
-      await setUserProfileData(result.user);
-    }
-    const profile = await getUserProfile(result.user["_delegate"].uid);
-    dispatch(
-      signIn({
-        email: profile.email,
-        photoURL: result.user["_delegate"]?.photoURL,
-        uid: profile.uid,
-        displayName: profile.displayName,
-      })
-    );
-  } catch (error) {
+    console.log(result);
+    // if (result.user) {
+    //   if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
+    //     await setUserProfileData({
+    //       uid: result.user.uid,
+    //       photoURL: result.user["_delegate"]?.photoURL,
+    //       displayName: result.user?.displayName,
+    //       email: result.user.email,
+    //       createdAt: Math.floor(Date.now() / 1000),
+    //     });
+    //   }
+    //   const profile:any = await getUserProfile(result.user["_delegate"].uid);
+    //   dispatch(
+    //     signIn({
+    //       email: profile.email,
+    //       photoURL: result.user["_delegate"]?.photoURL,
+    //       uid: profile.uid,
+    //       displayName: profile.displayName,
+    //     })
+    //   );
+    // }
+  } catch (error: any) {
     console.log(error.message);
   }
 }
 
 // used in EditProfileModal
-export async function updateUserProfile(profile) {
+export async function updateUserProfile(profile: User) {
   const user = auth.currentUser;
   try {
-    return await db.collection("users").doc(user.uid).update(profile);
+    return await db.collection("users").doc(user?.uid).update(profile);
   } catch (error) {
     throw error;
   }
 }
 
 // used in EditProfileModal
-export async function updateUserAvatar(img, profile, dispatch) {
+export async function updateUserAvatar(img: File, profile: User, dispatch: AppDispatch) {
   if (profile.photoURL) {
     try {
       const previousAvatarRef = storage.refFromURL(profile.photoURL);
@@ -205,7 +228,11 @@ export async function updateUserAvatar(img, profile, dispatch) {
 }
 
 // used in EventDetailed
-export async function updateAttendees(eventId, currUser, action) {
+export async function updateAttendees(
+  eventId: string,
+  currUser: User,
+  action: string
+) {
   try {
     const eventRef = db.collection("events").doc(eventId);
     const eventDoc = await eventRef.get();

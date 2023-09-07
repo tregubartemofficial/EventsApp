@@ -20,7 +20,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserProfileData = async () => {
       try {
-        const profileUser = await getUserProfile(id);
+        const profileUser = await getUserProfile(id as string);
         dispatch(setProfile(profileUser));
       } catch (error) {
         dispatch(setNoProfile());

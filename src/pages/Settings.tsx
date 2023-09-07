@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, CircularProgress } from "@mui/material";
+import { Alert, AlertTitle, CircularProgress, Grow } from "@mui/material";
 import React from "react";
 import { useParams } from "react-router";
 import { useAppSelector } from "../hooks/useAppSelector";
@@ -22,7 +22,11 @@ const Settings = () => {
     );
   }
 
-  return <div>Settings</div>;
+  return (
+    <Grow>
+      <div>Settings</div>
+    </Grow>
+  );
 };
 
 export default Settings;

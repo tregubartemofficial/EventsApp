@@ -1,38 +1,41 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-type User = {
-  email: string;
-  photoURL: string | null;
-  uid: string;
-  displayName: string;
+export type User = {
+  email?: string;
+  photoURL?: string | null;
+  uid?: string;
+  displayName?: string;
   bio?: string;
-}
+  createdAt?: number;
+  followers?: string;
+  following?: string;
+};
 
 type AuthState = {
   isAuth: boolean;
   currUser: User | null;
-  prevLocation: string | null;
-  currLocation: string | null;
+  prevLocation: string;
+  currLocation: string;
 }
 
 const initialState: AuthState = {
   isAuth: false,
   currUser: null,
-  prevLocation: null,
-  currLocation: null,
+  prevLocation: '',
+  currLocation: '',
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    signIn: (state, action: PayloadAction<User>) => {
+    signIn: (state, {payload}: PayloadAction<User>) => {
       state.isAuth = true;
       state.currUser = {
-        email: action.payload.email,
-        photoURL: action.payload.photoURL,
-        uid: action.payload.uid,
-        displayName: action.payload.displayName,
+        email: payload.email,
+        photoURL: payload.photoURL,
+        uid: payload.uid,
+        displayName: payload.displayName,
       };
     },
     signOut: (state) => {

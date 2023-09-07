@@ -18,7 +18,7 @@ const EventDetailed = () => {
   const [event] = useAppSelector((state) => state.events.events);
 
   useFirestoreDoc({
-    query: () => listenToEventFromFirestore(id),
+    query: () => listenToEventFromFirestore(id as string),
     data: (event: Event[]) => dispatch(fetchEvent(event)),
     deps: id,
   });

@@ -19,7 +19,6 @@ import {
   logInWithEmailAndPassword,
   socialLogin,
 } from "../../app/firebase/firebaseService";
-import { signIn } from "../../app/features/auth/authSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 
 const StyledTitle = styled(Typography)({
@@ -97,7 +96,7 @@ const AuthModal = () => {
         <IconButton
           sx={{ borderRadius: 0 }}
           onClick={() => {
-            socialLogin(dispatch, signIn);
+            socialLogin(dispatch);
             dispatch(toggleModal("auth"));
           }}
         >
