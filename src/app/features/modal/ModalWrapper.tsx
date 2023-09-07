@@ -1,6 +1,6 @@
 import { Backdrop, Box, Fade, Modal } from '@mui/material';
 import React from 'react'
-import { toggleModal } from './modalSlice';
+import { ModalState, toggleModal } from './modalSlice';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 
@@ -15,10 +15,11 @@ const style = {
   p: 4,
 };
 
+type ModalWrapperProps = {children: React.ReactNode, modalId: keyof ModalState}
 
-export const ModalWrapper = ({children, modalId}) => {
-    const isOpen = useAppSelector(state => state.modals[modalId])
-    const dispatch = useAppDispatch()
+export const ModalWrapper = ({ children, modalId }: ModalWrapperProps) => {
+  const isOpen = useAppSelector((state) => state.modals[modalId]);
+  const dispatch = useAppDispatch();
   return (
     <Modal
       open={isOpen}
@@ -32,10 +33,8 @@ export const ModalWrapper = ({children, modalId}) => {
       }}
     >
       <Fade in={isOpen}>
-        <Box sx={style}>
-          {children}
-        </Box>
+        <Box sx={style}>{children}</Box>
       </Fade>
     </Modal>
   );
-}
+};
