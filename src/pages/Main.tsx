@@ -1,20 +1,18 @@
 import { Stack } from "@mui/material";
 import React from "react";
-import ListItems from "../eventList/ListItems";
-import EventFilter from "../eventList/EventFilter";
+import ListItems from "../components/eventList/ListItems";
+import EventFilter from "../components/eventList/EventFilter";
 
 const Main = () => {
   return (
-    <main>
       <Stack
-        direction={{ xs: "column", sm: "row" }}
+        direction={{ xs: "column-reverse", sm: "row" }}
         justifyContent="space-around"
-        alignItems="center"
+        alignItems="flex-start"
       >
         <ListItems />
         <EventFilter/>
       </Stack>
-    </main>
   );
 };
 

@@ -1,19 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Autocomplete, Button, Stack, TextField } from "@mui/material";
-import { Link, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { addEvent, updateEvent } from "../../app/features/event/eventReducer";
+import {
+  Alert,
+  AlertTitle,
+  Autocomplete,
+  Button,
+  Stack,
+  TextField,
+} from "@mui/material";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import PlaceAutocompleteField from "./PlaceAutocompleteField";
+import {
+  addEventToFirestore,
+  updateEventsInFirestore,
+} from "../../app/firebase/firebaseService";
+import { toggleModal } from "../../app/features/modal/modalSlice";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
   category: yup.string().required("Category is required"),
   description: yup.string().required("Description is required"),
-  city: yup.string().required("City is required"),
-  street: yup.string().required("Street is required"),
-  date: yup.string().required("Date is required"),
+  venue: yup.string().required("Venue is required"),
+  date: yup.date().required("Date is required"),
 });
 
 const categoryList = [
@@ -31,144 +43,165 @@ const categoryList = [
 ];
 
 const EventForm = () => {
-  const dispacth = useDispatch;
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { id } = useParams();
-  const event = useSelector((state) =>
-    state.events?.events.find((e) => e.id === id)
-  );
+  const { isAuth, currUser } = useAppSelector((state) => state.auth);
+  const [selectedVenue, setSelectedVenue] = useState({});
+  const event = useAppSelector((state) => {
+    if (Array.isArray(state.events?.events)) {
+      return state.events?.events.find((e) => e.id === id);
+    }
+    if (!id) {
+      return undefined;
+    } else {
+      return state.events?.events;
+    }
+  });
 
-  const { values, errors, touched, handleBlur, setFieldValue, handleSubmit } =
-    useFormik({
-      initialValues: {
-        title: event?.title || "",
-        category: event?.category || "",
-        description: event?.description || "",
-        city: event?.city || "",
-        street: event?.city?.address || "",
-        date: event?.date?.toISOString().slice(0, 10) || "",
-      },
-      onSubmit: (values) => {
-        if (event) {
-          dispacth(updateEvent({ ...event, ...values }));
-        } else {
-          dispacth(
-            addEvent({
-              ...values,
-              id: Math.random(),
-              hostedBy: "Bob",
-              attendees: [],
-              hostPhotoURL: "",
-            })
-          );
-        }
-      },
-      validationSchema: validationSchema,
-    });
+  const cancelButtonLink = id ? `/events/${id}` : "/events";
 
-  // Reseting Fields
-  useEffect(() => {
-    setFieldValue("title", event?.title || "");
-    setFieldValue("category", event?.category || "");
-    setFieldValue("description", event?.description || "");
-    setFieldValue("city", event?.city || "");
-    setFieldValue("street", event?.city?.address || "");
-    setFieldValue("date", event?.date?.toISOString().slice(0, 10) || "");
-  }, [setFieldValue, event]);
+  const handleSelectedVenue = (data) => setSelectedVenue(data);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFieldValue(name, value);
-  };
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    setFieldValue,
+    handleSubmit,
+  } = useFormik({
+    initialValues: {
+      title: event?.title || "",
+      category: event?.category || null,
+      description: event?.description || "",
+      venue: event?.venue || "",
+      date: event ? new Date(event?.date).toISOString().slice(0, 10) : "",
+    },
+    onSubmit: async (values) => {
+      const data = {
+        ...values,
+        date: new Date(values.date).getTime(),
+        venue: selectedVenue,
+      };
+
+      try {
+        event
+          ? await updateEventsInFirestore(data)
+          : await addEventToFirestore(data, currUser);
+        navigate("/events");
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    validationSchema: validationSchema,
+  });
 
   return (
-    <form onSubmit={handleSubmit}>
-      <TextField
-        id="title"
-        name="title"
-        label="Event title"
-        margin="normal"
-        value={values.title}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.title && Boolean(errors.title)}
-        helperText={touched.title && errors.title}
-      />
-      <Autocomplete
-        autoSelect
-        autoComplete
-        options={categoryList}
-        onChange={(e, value) => {
-          setFieldValue("category", value);
-        }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            id="category"
-            name="category"
-            label="Category"
-            margin="normal"
-            value={values.category}
-            onBlur={handleBlur}
-            error={Boolean(touched.category && errors.category)}
-            helperText={touched.category && errors.category}
-          />
-        )}
-      />
-      <TextField
-        id="description"
-        name="description"
-        label="Description"
-        margin="normal"
-        value={values.description}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.description && Boolean(errors.description)}
-        helperText={touched.description && errors.description}
-      />
-      <PlaceAutocompleteField
-        id="city"
-        name="city"
-        label="City"
-        onBlur={handleBlur}
-        setFieldValue={setFieldValue}
-        error={touched.city && Boolean(errors.city)}
-        helperText={touched.city && errors.city}
-      />
-      <PlaceAutocompleteField
-        id="street"
-        name="street"
-        label="Street"
-        setFieldValue={setFieldValue}
-        onBlur={handleBlur}
-        error={touched.street && Boolean(errors.street)}
-        helperText={touched.street && errors.street}
-      />
-      <TextField
-        id="date"
-        type="date"
-        name="date"
-        margin="normal"
-        value={values.date}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.date && Boolean(errors.date)}
-        helperText={touched.date && errors.date}
-      />
-      <Stack direction="row" justifyContent="space-evenly">
-        <Button type="submit" variant="contained" sx={{ width: "40%" }}>
-          Submit
-        </Button>
-        <Button
-          component={Link}
-          to="/events"
-          variant="contained"
-          color="error"
-          sx={{ width: "40%" }}
-        >
-          Cancel
-        </Button>
-      </Stack>
-    </form>
+    <>
+      {!isAuth && (
+        <Alert severity="warning" sx={{ marginTop: 2 }}>
+          <AlertTitle>Warning</AlertTitle>
+          You should be authorized to create events!
+          <strong
+            style={{ cursor: "pointer" }}
+            onClick={() => dispatch(toggleModal("auth"))}
+          >
+            SIGN IN
+          </strong>
+        </Alert>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <TextField
+          id="title"
+          name="title"
+          label="Event title"
+          margin="normal"
+          value={values.title}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={Boolean(touched.title && errors.title)}
+          helperText={touched.title && errors.title}
+        />
+        <Autocomplete
+          autoSelect
+          autoComplete
+          options={categoryList}
+          value={values.category}
+          onChange={(e, value) => {
+            setFieldValue("category", value);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              id="category"
+              name="category"
+              label="Category"
+              margin="normal"
+              value={values.category}
+              onBlur={handleBlur}
+              error={Boolean(touched.category && errors.category)}
+              helperText={touched.category && errors.category}
+            />
+          )}
+        />
+        <TextField
+          id="description"
+          name="description"
+          label="Description"
+          margin="normal"
+          multiline
+          maxRows={4}
+          value={values.description}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={Boolean(touched.description && errors.description)}
+          helperText={touched.description && errors.description}
+        />
+        <PlaceAutocompleteField
+          id="venue"
+          name="venue"
+          label="Venue"
+          onBlur={handleBlur}
+          setFieldValue={setFieldValue}
+          error={Boolean(touched.venue && errors.venue)}
+          helperText={touched.venue && errors.venue}
+          handleSelectedVenue={handleSelectedVenue}
+        />
+        <TextField
+          id="date"
+          type="date"
+          name="date"
+          margin="normal"
+          value={values.date}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={Boolean(touched.date && errors.date)}
+          helperText={touched.date && errors.date}
+        />
+        <Stack direction="row" justifyContent="space-evenly">
+          <Button
+            type="submit"
+            disabled={!isAuth}
+            variant="contained"
+            sx={{ width: "40%" }}
+          >
+            Submit
+          </Button>
+          <Button
+            component={Link}
+            to={cancelButtonLink}
+            variant="contained"
+            color="error"
+            sx={{ width: "40%" }}
+          >
+            Cancel
+          </Button>
+        </Stack>
+      </form>
+    </>
   );
 };
 

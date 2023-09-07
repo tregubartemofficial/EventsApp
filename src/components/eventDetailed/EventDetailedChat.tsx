@@ -1,7 +1,19 @@
-import { Avatar, Card, List, ListItem, ListItemAvatar, ListItemText, ListSubheader, Typography } from '@mui/material'
-import React from 'react'
+import React from "react";
+import {
+  Avatar,
+  Card,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  ListSubheader,
+  Typography,
+} from "@mui/material";
+import { Event } from "../../app/features/event/eventSlice";
 
-const EventDetailedChat = () => {
+type EventDetailedChatProps = { event: Event };
+
+const EventDetailedChat = ({ event }: EventDetailedChatProps) => {
   return (
     <Card>
       <List
@@ -39,6 +51,6 @@ const EventDetailedChat = () => {
       </List>
     </Card>
   );
-}
+};
 
-export default EventDetailedChat
+export default EventDetailedChat;

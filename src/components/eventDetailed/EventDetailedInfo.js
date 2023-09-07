@@ -14,6 +14,7 @@ function isMobileOrTablet() {
     (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(
       i
     ) ||
+      // eslint-disable-next-line no-useless-escape
       /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(
         i.substr(0, 4)
       )) &&
@@ -24,11 +25,10 @@ function isMobileOrTablet() {
 window.isMobileOrTablet = window.isMobileOrTablet || isMobileOrTablet;
 
 const EventDetailedInfo = ({ event }) => {
+  const { latLon } = event.venue;
   const [open, setOpen] = useState(false);
   const [map, setMap] = useState(null);
   const mapContainerRef = useRef(null);
-
-  const deserializedDate = new Date(event.date);
 
   useEffect(() => {
     if (open) {
@@ -38,7 +38,7 @@ const EventDetailedInfo = ({ event }) => {
         const initializedMap = tt.map({
           key: "GgFavlAqzd0k4TxkgANMCXD23Kc4lF9S",
           container: mapContainerRef.current,
-          center: [28.44840377571382, 49.22599785318803],
+          center: [latLon?.lon, latLon?.lat],
           zoom: 15,
           style:
             "https://api.tomtom.com/style/1/style/21.1.0-*?map=basic_night&poi=poi_main",
@@ -52,15 +52,18 @@ const EventDetailedInfo = ({ event }) => {
           initializedMap.setPaintProperty("POI", "text-color", "#ffffff");
         });
         setMap(initializedMap);
-        // eslint-disable-next-line no-unused-vars
-        var marker = new tt.Marker({})
-          .setLngLat(initializedMap.getCenter())
-          .addTo(initializedMap);
       };
 
       initializeMap();
     }
-  }, [open]);
+  }, [open, latLon]);
+
+  useEffect(() => {
+    if (map) {
+      const marker = new tt.Marker().setLngLat(map.getCenter()).addTo(map);
+      marker.setLngLat(map.getCenter());
+    }
+  }, [map]);
 
   const handleDisplayingMap = () => setOpen(!open);
 
@@ -68,34 +71,39 @@ const EventDetailedInfo = ({ event }) => {
     <Card>
       <List>
         <ListItem divider>
-          <InfoOutlinedIcon sx={{ marginRight: 2 }} />
+          <InfoOutlinedIcon sx={{ mr: 2 }} />
           <ListItemText primary={event.description} />
         </ListItem>
         <ListItem divider>
-          <CalendarMonthIcon sx={{ marginRight: 2 }} />
-          <ListItemText primary={deserializedDate.toUTCString()} />
+          <CalendarMonthIcon sx={{ mr: 2 }} />
+          <ListItemText primary={new Date(event.date).toUTCString()} />
         </ListItem>
-        <ListItem divider>
-          <LocationOnIcon sx={{ marginRight: 2 }} />
+        <ListItem>
+          <LocationOnIcon sx={{ mr: 2 }} />
           <ListItemText primary={event.venue?.address} />
           <Button
-            sx={{ marginLeft: 2 }}
+            sx={{ ml: 2 }}
             variant="outlined"
             onClick={handleDisplayingMap}
+            disabled={!latLon?.lon}
           >
             {open ? "Hide Map" : "Show Map"}
           </Button>
         </ListItem>
-        <ListItem divider>
-          <motion.div>
-            {open && (
+        {open && (
+          <ListItem sx={{ justifyContent: "center" }}>
+            <motion.div>
               <Box
                 ref={mapContainerRef}
-                sx={{ width: "860px", height: "300px", margin: "auto" }}
+                sx={{
+                  width: { xs: "85vw", md: "55vw" },
+                  height: "50vh",
+                  margin: "auto",
+                }}
               />
-            )}
-          </motion.div>
-        </ListItem>
+            </motion.div>
+          </ListItem>
+        )}
       </List>
     </Card>
   );
