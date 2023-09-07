@@ -104,7 +104,8 @@ export const logInWithEmailAndPassword = async (
   email: string,
   password: string,
   dispatch: AppDispatch,
-  setHelperText: React.Dispatch<React.SetStateAction<string>>
+  setHelperText: React.Dispatch<React.SetStateAction<string>>,
+  navigate: NavigateFunction
 ) => {
   try {
     const { user } = await signInWithEmailAndPassword(auth, email, password);
@@ -118,6 +119,7 @@ export const logInWithEmailAndPassword = async (
       })
     );
     dispatch(toggleModal("auth"));
+    navigate("/events");
   } catch (error) {
     setHelperText("Something went wrong with email or password");
   }
@@ -166,7 +168,7 @@ export const registerWithEmailAndPassword = async (
 };
 
 // used in AuthModal and RegisterForm to register and singIn
-export async function socialLogin(dispatch: AppDispatch) {
+export async function socialLogin(dispatch: AppDispatch, navigate: NavigateFunction) {
   const provider = new firebase.auth.GoogleAuthProvider();
   try {
     const result = await firebase.auth().signInWithPopup(provider);
@@ -189,6 +191,7 @@ export async function socialLogin(dispatch: AppDispatch) {
           displayName: profile.displayName,
         })
       );
+      navigate("/events");
     }
   } catch (error: any) {
     console.log(error.message);

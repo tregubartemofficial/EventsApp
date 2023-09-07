@@ -13,7 +13,7 @@ import {
 import GoogleIcon from "@mui/icons-material/Google";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toggleModal } from "../../app/features/modal/modalSlice";
 import {
   logInWithEmailAndPassword,
@@ -47,6 +47,7 @@ const validationSchema = yup.object({
 
 const AuthModal = () => {
   const [helperText, setHelperText] = useState("");
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
     useFormik({
@@ -55,7 +56,7 @@ const AuthModal = () => {
         password: "",
       },
       onSubmit: ({ email, password }) => {
-        logInWithEmailAndPassword(email, password, dispatch, setHelperText);
+        logInWithEmailAndPassword(email, password, dispatch, setHelperText, navigate);
       },
 
       validationSchema: validationSchema,
@@ -111,7 +112,7 @@ const AuthModal = () => {
         <IconButton
           sx={{ borderRadius: 0 }}
           onClick={() => {
-            socialLogin(dispatch);
+            socialLogin(dispatch, navigate);
             dispatch(toggleModal("auth"));
           }}
         >

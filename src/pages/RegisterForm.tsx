@@ -113,7 +113,7 @@ const RegisterForm = () => {
       <IconButton
         sx={{ borderRadius: 0 }}
         onClick={() => {
-          socialLogin(dispatch);
+          socialLogin(dispatch, navigate);
         }}
       >
         <GoogleIcon />
