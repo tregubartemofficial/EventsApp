@@ -10,14 +10,22 @@ import {
   TextField,
 } from "@mui/material";
 import { Link, useNavigate, useParams } from "react-router-dom";
+<<<<<<< HEAD
+=======
+import { useDispatch, useSelector } from "react-redux";
+>>>>>>> dac9d966bbacd9297e1e390aeb951f7f2267f537
 import PlaceAutocompleteField from "./PlaceAutocompleteField";
 import {
   addEventToFirestore,
   updateEventsInFirestore,
 } from "../../app/firebase/firebaseService";
+<<<<<<< HEAD
 import { toggleModal } from "../../app/features/modal/modalSlice";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
+=======
+import { toggleModal } from "../../app/features/modal/modalReducer";
+>>>>>>> dac9d966bbacd9297e1e390aeb951f7f2267f537
 
 
 const validationSchema = yup.object({
@@ -43,12 +51,21 @@ const categoryList = [
 ];
 
 const EventForm = () => {
+<<<<<<< HEAD
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
   const { isAuth, currUser } = useAppSelector((state) => state.auth);
   const [selectedVenue, setSelectedVenue] = useState({});
   const event = useAppSelector((state) => {
+=======
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const { isAuth, currUser } = useSelector((state) => state.auth);
+  const [selectedVenue, setSelectedVenue] = useState({});
+  const event = useSelector((state) => {
+>>>>>>> dac9d966bbacd9297e1e390aeb951f7f2267f537
     if (Array.isArray(state.events?.events)) {
       return state.events?.events.find((e) => e.id === id);
     }
@@ -103,7 +120,11 @@ const EventForm = () => {
       {!isAuth && (
         <Alert severity="warning" sx={{ marginTop: 2 }}>
           <AlertTitle>Warning</AlertTitle>
+<<<<<<< HEAD
           You should be authorized to create events!
+=======
+          You should be authorized to create events!{" "}
+>>>>>>> dac9d966bbacd9297e1e390aeb951f7f2267f537
           <strong
             style={{ cursor: "pointer" }}
             onClick={() => dispatch(toggleModal("auth"))}

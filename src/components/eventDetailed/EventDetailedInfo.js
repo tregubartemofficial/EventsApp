@@ -75,11 +75,19 @@ const EventDetailedInfo = ({ event }) => {
           <ListItemText primary={event.description} />
         </ListItem>
         <ListItem divider>
+<<<<<<< HEAD
           <CalendarMonthIcon sx={{ mr: 2 }} />
           <ListItemText primary={new Date(event.date).toUTCString()} />
         </ListItem>
         <ListItem>
           <LocationOnIcon sx={{ mr: 2 }} />
+=======
+          <CalendarMonthIcon sx={{ marginRight: 2 }} />
+          <ListItemText primary={new Date(event.date).toUTCString()} />
+        </ListItem>
+        <ListItem>
+          <LocationOnIcon sx={{ marginRight: 2 }} />
+>>>>>>> dac9d966bbacd9297e1e390aeb951f7f2267f537
           <ListItemText primary={event.venue?.address} />
           <Button
             sx={{ ml: 2 }}

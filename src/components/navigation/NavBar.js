@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+<<<<<<< HEAD
 import { toggleModal } from "../../app/features/modal/modalSlice";
 import AuthModal from "../modal/AuthModal";
 import { signOut } from "../../app/features/auth/authSlice";
@@ -22,6 +23,14 @@ import PhoneNav from "./PhoneNav";
 import { Logout, Person, Settings } from "@mui/icons-material";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
+=======
+import { useDispatch, useSelector } from "react-redux";
+import { toggleModal } from "../../app/features/modal/modalReducer";
+import AuthModal from "../modal/AuthModal";
+import { signOut } from "../../app/features/auth/authReducer";
+import PhoneNav from "./PhoneNav";
+import { Logout, Person, Settings } from "@mui/icons-material";
+>>>>>>> dac9d966bbacd9297e1e390aeb951f7f2267f537
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -37,9 +46,15 @@ const StyledBtn = styled(Button)({ my: 2, color: "white", display: "block" });
 
 const NavBar = () => {
   const [anchorElUser, setAnchorElUser] = useState(null);
+<<<<<<< HEAD
   const { isAuth, currUser } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+=======
+  const { isAuth, currUser } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+>>>>>>> dac9d966bbacd9297e1e390aeb951f7f2267f537
 
   const handleSignIn = () => {
     dispatch(toggleModal("auth"));
