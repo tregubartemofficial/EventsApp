@@ -7,22 +7,20 @@ export type User = {
   displayName?: string;
   bio?: string;
   createdAt?: number;
-  followers?: string;
-  following?: string;
+  followerUIDs?: string[];
+  followingUIDs?: string[];
 };
 
 type AuthState = {
   isAuth: boolean;
   currUser: User | null;
-  prevLocation: string;
-  currLocation: string;
+  prevLocation?: string;
+  currLocation?: string;
 }
 
 const initialState: AuthState = {
   isAuth: false,
   currUser: null,
-  prevLocation: '',
-  currLocation: '',
 };
 
 const authSlice = createSlice({

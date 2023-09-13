@@ -34,7 +34,7 @@ const EventDetailed = () => {
       alignItems={{ xs: "flex-center", md: "flex-start" }}
       spacing={{ xs: 1, sm: 2 }}
     >
-      <Stack direction="column" spacing={{ xs: 1, sm: 2, md: 3.5 }}>
+      <Stack direction="column" spacing={{ xs: 1, sm: 2, md: 3.5 }} flex={80}>
         <EventDetailedHeader event={event} />
         <EventDetailedChat event={event} />
         <EventDetailedInfo event={event} />

@@ -14,8 +14,9 @@ import { useAppDispatch } from "../hooks/useAppDispatch";
 const Profile = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams();
-  const { currUser } = useAppSelector((state) => state.auth);
+  const { currUser, isAuth } = useAppSelector((state) => state.auth);
   const profile = useAppSelector((state) => state.profile);
+  const isFollowing = profile.followerUIDs?.includes(currUser?.uid as string);
   
   useEffect(() => {
     const fetchUserProfileData = async () => {
@@ -34,7 +35,13 @@ const Profile = () => {
 
   return (
     <>
-      <ProfileHeader profile={profile} isAuthUserProfile={isAuthUserProfile} />
+      <ProfileHeader
+        isAuthUserProfile={isAuthUserProfile}
+        isFollowing={isFollowing as boolean}
+        isAuth={isAuth}
+        profile={profile}
+        currUserUid={currUser?.uid as string}
+      />
       <ProfileContent profile={profile} />
       {profile.error && (
         <Alert severity="error">

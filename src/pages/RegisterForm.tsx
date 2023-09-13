@@ -107,7 +107,7 @@ const RegisterForm = () => {
         <FormHelperText error={true} sx={{ fontSize: "1rem" }}>
           {helperText}
         </FormHelperText>
-        <Button type="submit">REGISTER</Button>
+        <Button type="submit" variant="contained">REGISTER</Button>
       </form>
       <Divider sx={{ my: 1 }}>Or</Divider>
       <IconButton

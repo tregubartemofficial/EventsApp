@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Box, IconButton, Menu, MenuItem } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 
-const PhoneNav = ({ isAuth, handleSignOut, handleSignIn }) => {
+const PhoneNav = ({ isAuth, handleToggleAuthModal }) => {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const navigate = useNavigate();
   const handleCloseNavMenu = () => {
@@ -62,7 +62,7 @@ const PhoneNav = ({ isAuth, handleSignOut, handleSignIn }) => {
           <MenuItem
             onClick={() => {
               handleCloseNavMenu();
-              handleSignIn();
+              handleToggleAuthModal();
             }}
           >
             Sign In
@@ -72,7 +72,6 @@ const PhoneNav = ({ isAuth, handleSignOut, handleSignIn }) => {
           <MenuItem
             onClick={() => {
               handleCloseNavMenu();
-              handleSignOut();
               navigate("/register");
             }}
           >

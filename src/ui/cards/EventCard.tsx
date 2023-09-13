@@ -20,7 +20,7 @@ type EventCardProps = { event: Event; isProfile?: boolean };
 const EventCard = ({ event, isProfile = false }: EventCardProps) => {
   const deserializedDate = new Date(event.date);
   return (
-    <Grow in={true}>
+    <Grow in={true} timeout={{appear: 800, enter: 1200}}>
       <ListItem
         sx={{
           flexDirection: "column",

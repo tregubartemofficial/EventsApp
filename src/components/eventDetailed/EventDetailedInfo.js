@@ -1,10 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Button, Card, List, ListItem, ListItemText } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  List,
+  ListItem,
+  ListItemText,
+  Zoom,
+} from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import tt from "@tomtom-international/web-sdk-maps";
-import { motion } from "framer-motion";
 
 function isMobileOrTablet() {
   var i,
@@ -90,20 +97,21 @@ const EventDetailedInfo = ({ event }) => {
             {open ? "Hide Map" : "Show Map"}
           </Button>
         </ListItem>
-        {open && (
-          <ListItem sx={{ justifyContent: "center" }}>
-            <motion.div>
-              <Box
-                ref={mapContainerRef}
-                sx={{
-                  width: { xs: "85vw", md: "55vw" },
-                  height: "50vh",
-                  margin: "auto",
-                }}
-              />
-            </motion.div>
-          </ListItem>
-        )}
+        <Zoom
+          in={open}
+          mountOnEnter
+          unmountOnExit
+        >
+          <Box
+            sx={{
+              width: { xs: "85vw", md: "55vw" },
+              height: "50vh",
+              margin: "auto",
+              justifyContent: "center",
+            }}
+            ref={mapContainerRef}
+          />
+        </Zoom>
       </List>
     </Card>
   );

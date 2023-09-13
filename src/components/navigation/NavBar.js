@@ -17,11 +17,11 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toggleModal } from "../../app/features/modal/modalSlice";
 import AuthModal from "../modal/AuthModal";
-import { signOut } from "../../app/features/auth/authSlice";
 import PhoneNav from "./PhoneNav";
 import { Logout, Person, Settings } from "@mui/icons-material";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { signOutFromFirebase } from "../../app/firebase/firebaseService";
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -38,15 +38,15 @@ const StyledBtn = styled(Button)({ my: 2, color: "white", display: "block" });
 const NavBar = () => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const { isAuth, currUser } = useAppSelector((state) => state.auth);
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const handleSignIn = () => {
+  const handleToggleAuthModal = () => {
     dispatch(toggleModal("auth"));
   };
+  
   const handleSignOut = () => {
-    dispatch(signOut());
-    navigate("/");
+    signOutFromFirebase (dispatch, navigate);
   };
 
   const handleOpenUserMenu = (event) => {
@@ -61,7 +61,7 @@ const NavBar = () => {
   return (
     <>
       <AppBar position="static">
-        <Toolbar sx={{ justifyContent: "space-between" }} component='nav'>
+        <Toolbar sx={{ justifyContent: "space-between" }} component="nav">
           <StyledTitle
             variant="h6"
             component={Link}
@@ -74,8 +74,7 @@ const NavBar = () => {
           </StyledTitle>
           <PhoneNav
             isAuth={isAuth}
-            handleSignOut={handleSignOut}
-            handleSignIn={handleSignIn}
+            handleToggleAuthModal={handleToggleAuthModal}
           />
           <StyledTitle
             variant="h5"
@@ -100,14 +99,19 @@ const NavBar = () => {
                 CREATE EVENT
               </StyledBtn>
             </Stack>
-            {!isAuth && <StyledBtn onClick={handleSignIn}>Sign In</StyledBtn>}
+            {!isAuth && (
+              <StyledBtn onClick={handleToggleAuthModal}>Sign In</StyledBtn>
+            )}
           </Box>
           {/* USER */}
           {isAuth && (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="User profile">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={currUser.displayName} src={currUser.photoURL} />
+                  <Avatar
+                    alt={currUser?.displayName}
+                    src={currUser?.photoURL}
+                  />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -128,7 +132,7 @@ const NavBar = () => {
               >
                 <MenuItem
                   component={Link}
-                  to={`/profile/${currUser.uid}`}
+                  to={`/profile/${currUser?.uid}`}
                   onClick={handleCloseUserMenu}
                 >
                   <ListItemIcon>
@@ -138,7 +142,7 @@ const NavBar = () => {
                 </MenuItem>
                 <MenuItem
                   component={Link}
-                  to={`/settings/${currUser.uid}`}
+                  to={`/settings/${currUser?.uid}`}
                   onClick={handleCloseUserMenu}
                 >
                   <ListItemIcon>

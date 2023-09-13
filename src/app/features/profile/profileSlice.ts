@@ -8,8 +8,8 @@ export type ProfileState = {
   email: string;
   uid: string;
   photoURL?: string;
-  followers?: string;
-  following?: string;
+  followerUIDs?: string[];
+  followingUIDs?: string[];
 };
 
 const initialState: ProfileState = {
@@ -19,8 +19,8 @@ const initialState: ProfileState = {
   email: "",
   uid: "",
   photoURL: "",
-  followers: '',
-  following: '',
+  followerUIDs: [],
+  followingUIDs: [],
 };
 
 const profileSlice = createSlice({
@@ -34,12 +34,17 @@ const profileSlice = createSlice({
       state.email = payload.email!;
       state.photoURL = payload.photoURL!;
       state.error = false;
+      state.followerUIDs = payload.followerUIDs!;
+      state.followingUIDs = payload.followingUIDs!;
     },
     setNoProfile: (state) => {
       state.error = true;
     },
+    setFollowers: (state, { payload }: PayloadAction<string[]>) => {
+      state.followerUIDs = payload;
+    }
   },
 });
 
-export const { setProfile, setNoProfile } = profileSlice.actions;
+export const { setProfile, setNoProfile, setFollowers } = profileSlice.actions;
 export default profileSlice;

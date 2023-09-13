@@ -4,13 +4,19 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import firebase from "./firebaseConfig";
-import { doc, setDoc, onSnapshot } from "firebase/firestore";
+import { doc, setDoc, onSnapshot, arrayUnion } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { User, signIn, updateAvatarPhoto } from "../features/auth/authSlice";
+import {
+  User,
+  signIn,
+  signOut,
+  updateAvatarPhoto,
+} from "../features/auth/authSlice";
 import { toggleModal } from "../features/modal/modalSlice";
-import { Event, Filter } from "../features/event/eventSlice";
+import { Event, Filter, setFilter } from "../features/event/eventSlice";
 import { AppDispatch } from "../../store";
 import { NavigateFunction } from "react-router";
+import { setFollowers } from "../features/profile/profileSlice";
 
 const db = firebase.firestore();
 const storage = firebase.storage();
@@ -60,7 +66,7 @@ export function addEventToFirestore(event: Event, currUser: User) {
     hostedBy: currUser.displayName,
     hostPhotoURL: currUser.photoURL,
     uid: currUser.uid,
-    attendees: firebase.firestore.FieldValue.arrayUnion({
+    attendees: arrayUnion({
       uid: currUser.uid,
       name: currUser.displayName,
       photoURL: currUser.photoURL,
@@ -168,7 +174,10 @@ export const registerWithEmailAndPassword = async (
 };
 
 // used in AuthModal and RegisterForm to register and singIn
-export async function socialLogin(dispatch: AppDispatch, navigate: NavigateFunction) {
+export async function socialLogin(
+  dispatch: AppDispatch,
+  navigate: NavigateFunction
+) {
   const provider = new firebase.auth.GoogleAuthProvider();
   try {
     const result = await firebase.auth().signInWithPopup(provider);
@@ -182,7 +191,7 @@ export async function socialLogin(dispatch: AppDispatch, navigate: NavigateFunct
           createdAt: Math.floor(Date.now() / 1000),
         });
       }
-      const profile:any = await getUserProfile(result.user.uid);
+      const profile: any = await getUserProfile(result.user.uid);
       dispatch(
         signIn({
           email: profile.email,
@@ -198,6 +207,20 @@ export async function socialLogin(dispatch: AppDispatch, navigate: NavigateFunct
   }
 }
 
+export async function signOutFromFirebase(
+  dispatch: AppDispatch,
+  navigate: NavigateFunction
+) {
+  try {
+    await auth.signOut();
+    dispatch(signOut());
+    dispatch(setFilter("ALL"));
+    navigate("/");
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 // used in EditProfileModal
 export async function updateUserProfile(profile: User) {
   const user = auth.currentUser;
@@ -209,7 +232,11 @@ export async function updateUserProfile(profile: User) {
 }
 
 // used in EditProfileModal
-export async function updateUserAvatar(img: File, profile: User, dispatch: AppDispatch) {
+export async function updateUserAvatar(
+  img: File,
+  profile: User,
+  dispatch: AppDispatch
+) {
   if (profile.photoURL) {
     try {
       const previousAvatarRef = storage.refFromURL(profile.photoURL);
@@ -233,16 +260,12 @@ export async function updateUserAvatar(img: File, profile: User, dispatch: AppDi
 export async function updateAttendees(
   eventId: string,
   currUser: User,
-  action: string
+  action: "ADD" | "REMOVE"
 ) {
   try {
     const eventRef = db.collection("events").doc(eventId);
     const eventDoc = await eventRef.get();
     const eventData = eventDoc.data();
-    // const userRef = db.collection("users").doc(currUser.uid);
-    // const userDoc = await userRef.get();
-    // const userData = userDoc.data();
-
     let updatedAttendees = [...eventData?.attendees];
 
     if (action === "ADD") {
@@ -255,14 +278,49 @@ export async function updateAttendees(
       updatedAttendees = updatedAttendees.filter(
         (attendee) => attendee.uid !== currUser.uid
       );
-    } else {
-      throw new Error("Invalid action specified.");
     }
+
     await eventRef.update({
       attendees: updatedAttendees,
       attendeesUid: updatedAttendees.map((attendee) => attendee.uid),
     });
   } catch (error) {
     console.error("Error updating attendees:", error);
+  }
+}
+
+export async function updateFollowers(
+  followerUid: string,
+  followingUid: string,
+  action: "FOLLOW" | "UNFOLLOW",
+  dispatch: AppDispatch
+) {
+  const followerRef = db.collection("users").doc(followerUid);
+  const followingRef = db.collection("users").doc(followingUid);
+
+  const followerDoc = await followerRef.get();
+  const followingDoc = await followingRef.get();
+
+  let { followingUIDs }: any = followerDoc.data();
+  let { followerUIDs }: any = followingDoc.data();
+
+  try {
+    if (action === "FOLLOW") {
+      followerUIDs.push(followerUid);
+      followingUIDs.push(followingUid);
+    } else if (action === "UNFOLLOW") {
+      followerUIDs = followerUIDs.filter(
+        (follower: string) => follower !== followerUid
+      );
+      followingUIDs = followingUIDs.filter(
+        (following: string) => following !== followingUid
+      );
+    }
+
+    await followerRef.update({ followingUIDs: followingUIDs });
+    await followingRef.update({ followerUIDs: followerUIDs });
+    dispatch(setFollowers(followerUIDs));
+  } catch (error) {
+    console.error("Error updating followers:", error);
   }
 }
