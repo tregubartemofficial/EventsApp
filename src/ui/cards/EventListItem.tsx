@@ -15,9 +15,9 @@ import { Link } from "react-router-dom";
 import { grey } from "@mui/material/colors";
 import { Event } from "../../app/features/event/eventSlice";
 
-type EventCardProps = { event: Event; isProfile?: boolean };
+type EventListItemProps = { event: Event; isProfile?: boolean };
 
-const EventCard = ({ event, isProfile = false }: EventCardProps) => {
+const EventListItem = ({ event, isProfile = false }: EventListItemProps) => {
   const deserializedDate = new Date(event.date);
   return (
     <Grow in={true} timeout={{appear: 800, enter: 1200}}>
@@ -111,4 +111,4 @@ const EventCard = ({ event, isProfile = false }: EventCardProps) => {
   );
 };
 
-export default EventCard;
+export default EventListItem;

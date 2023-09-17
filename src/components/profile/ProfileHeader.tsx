@@ -16,6 +16,9 @@ import { grey } from "@mui/material/colors";
 import { ProfileState } from "../../app/features/profile/profileSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { updateFollowers } from "../../app/firebase/firebaseService";
+import FollowerModal from "../modal/FollowerModal";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import FollowerCard from "../../ui/cards/FollowerCard";
 
 type ProfileHeaderProps = {
   currUserUid: string;
@@ -33,6 +36,7 @@ const ProfileHeader = ({
   isAuthUserProfile,
 }: ProfileHeaderProps) => {
   const dispatch = useAppDispatch();
+  const modalState = useAppSelector((state) => state.modals);
   const [openMessage, setOpenMessage] = useState(false);
 
   const handleCopyURL = () => {
@@ -60,22 +64,8 @@ const ProfileHeader = ({
                 />
                 <Typography>{profile?.displayName}</Typography>
               </Stack>
-              <Stack alignItems="center">
-                <Typography variant="h5" color={grey[700]}>
-                  {profile.followerUIDs?.length}
-                </Typography>
-                <Typography variant="h6" color={grey[700]}>
-                  Followers
-                </Typography>
-              </Stack>
-              <Stack alignItems="center">
-                <Typography variant="h5" color={grey[700]}>
-                  {profile.followingUIDs?.length}
-                </Typography>
-                <Typography variant="h6" color={grey[700]}>
-                  Following
-                </Typography>
-              </Stack>
+              <FollowerCard profile={profile} type="following" />
+              <FollowerCard profile={profile} type="follower" />
             </Stack>
             <Stack flexDirection="row" justifyContent="space-around">
               {isAuthUserProfile && (
@@ -94,7 +84,12 @@ const ProfileHeader = ({
                   sx={{ width: "45%" }}
                   disabled={profile.error}
                   onClick={() =>
-                    updateFollowers(currUserUid, profile.uid, "FOLLOW", dispatch)
+                    updateFollowers(
+                      currUserUid,
+                      profile.uid,
+                      "FOLLOW",
+                      dispatch
+                    )
                   }
                 >
                   Follow
@@ -106,7 +101,12 @@ const ProfileHeader = ({
                   sx={{ width: "45%" }}
                   disabled={profile.error}
                   onClick={() =>
-                    updateFollowers(currUserUid, profile.uid, "UNFOLLOW", dispatch)
+                    updateFollowers(
+                      currUserUid,
+                      profile.uid,
+                      "UNFOLLOW",
+                      dispatch
+                    )
                   }
                 >
                   Unfollow
@@ -139,6 +139,12 @@ const ProfileHeader = ({
         </Card>
       </Grow>
 
+      {modalState.follower && (
+        <FollowerModal profile={profile} type="follower" />
+      )}
+      {modalState.following && (
+        <FollowerModal profile={profile} type="following" />
+      )}
       <EditProfileModal profile={profile} />
     </>
   );

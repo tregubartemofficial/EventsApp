@@ -109,6 +109,6 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
-  "include": ["src/**/*.tsx", "src/**/*.ts", "src/app/firebase/firebaseService.ts", "src/app/features/modal/ModalWrapper.tsx", "src/components/eventList/ListItems.js", "src/components/eventDetailed/EventDetailedHeader.tsx", "src/index.tsx", "src/hooks/useFirestoreCollection.js",],
+  "include": ["src/**/*.tsx", "src/**/*.ts", "src/app/firebase/firebaseService.ts", "src/ui/modal/ModalWrapper.tsx", "src/components/eventList/ListItems.js", "src/components/eventDetailed/EventDetailedHeader.tsx", "src/index.tsx", "src/hooks/useFirestoreCollection.js",],
   "exclude": ["node_modules", "**/*.spec.ts"],
 }

@@ -9,6 +9,8 @@ export type User = {
   createdAt?: number;
   followerUIDs?: string[];
   followingUIDs?: string[];
+  followerProfiles?: User[];
+  followingProfiles?: User[];
 };
 
 type AuthState = {

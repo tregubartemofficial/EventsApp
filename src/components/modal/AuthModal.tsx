@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ModalWrapper } from "../../app/features/modal/ModalWrapper";
+import { ModalWrapper } from "../../ui/modal/ModalWrapper";
 import {
   Button,
   Divider,

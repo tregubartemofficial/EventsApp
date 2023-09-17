@@ -1,5 +1,5 @@
 import React from "react";
-import { ModalWrapper } from "../../app/features/modal/ModalWrapper";
+import { ModalWrapper } from "../../ui/modal/ModalWrapper";
 import {
   Avatar,
   Button,

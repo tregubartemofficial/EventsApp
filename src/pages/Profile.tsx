@@ -10,6 +10,7 @@ import {
 import { Alert, AlertTitle } from "@mui/material";
 import { useAppSelector } from "../hooks/useAppSelector";
 import { useAppDispatch } from "../hooks/useAppDispatch";
+import { User } from "../app/features/auth/authSlice";
 
 const Profile = () => {
   const dispatch = useAppDispatch();
@@ -22,7 +23,7 @@ const Profile = () => {
     const fetchUserProfileData = async () => {
       try {
         const profileUser = await getUserProfile(id as string);
-        dispatch(setProfile(profileUser));
+        dispatch(setProfile(profileUser as User));
       } catch (error) {
         dispatch(setNoProfile());
       }

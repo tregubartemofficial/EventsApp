@@ -23,7 +23,6 @@
     "formik": "^2.4.1",
     "framer-motion": "^10.12.17",
     "react": "^18.2.0",
-    "react-calendar": "^4.3.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.1.1",
     "react-router": "^6.13.0",
@@ -61,5 +60,17 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "assert": "^2.1.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "process": "^0.11.10",
+    "react-app-rewired": "^2.2.1",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.3"
   }
 }

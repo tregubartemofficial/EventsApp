@@ -4,12 +4,16 @@ export type ModalState = {
   editProfile: boolean;
   auth: boolean;
   confirmDelete: boolean;
+  follower: boolean;
+  following: boolean;
 };
 
 const initialState: ModalState = {
   editProfile: false,
   auth: false,
   confirmDelete: false,
+  follower: false,
+  following: false,
 };
 
 const modalSlice = createSlice({

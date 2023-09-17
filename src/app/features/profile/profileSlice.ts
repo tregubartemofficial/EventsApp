@@ -10,6 +10,8 @@ export type ProfileState = {
   photoURL?: string;
   followerUIDs?: string[];
   followingUIDs?: string[];
+  followerProfiles?: User[];
+  followingProfiles?: User[];
 };
 
 const initialState: ProfileState = {
@@ -21,6 +23,8 @@ const initialState: ProfileState = {
   photoURL: "",
   followerUIDs: [],
   followingUIDs: [],
+  followerProfiles: [],
+  followingProfiles: [],
 };
 
 const profileSlice = createSlice({
@@ -42,9 +46,21 @@ const profileSlice = createSlice({
     },
     setFollowers: (state, { payload }: PayloadAction<string[]>) => {
       state.followerUIDs = payload;
+    },
+    setFollowerProfiles: (state, { payload }: PayloadAction<User[]>) => {
+      state.followerProfiles = payload;
+    },
+    setFollowingProfiles: (state, { payload }: PayloadAction<User[]>) => {
+      state.followingProfiles = payload;
     }
   },
 });
 
-export const { setProfile, setNoProfile, setFollowers } = profileSlice.actions;
+export const {
+  setProfile,
+  setNoProfile,
+  setFollowers,
+  setFollowerProfiles,
+  setFollowingProfiles,
+} = profileSlice.actions;
 export default profileSlice;

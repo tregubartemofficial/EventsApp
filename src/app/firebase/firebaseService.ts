@@ -4,7 +4,12 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import firebase from "./firebaseConfig";
-import { doc, setDoc, onSnapshot, arrayUnion } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  arrayUnion,
+  getDoc,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import {
   User,
@@ -75,12 +80,12 @@ export function addEventToFirestore(event: Event, currUser: User) {
 }
 
 // used in EventForm
-export function updateEventsInFirestore(event: Event) {
+export const updateEventsInFirestore = (event: Event) => {
   return db.collection("events").doc(event.id).update(event);
-}
+};
 
 // used in registration functions
-export function setUserProfileData(user: any) {
+export const setUserProfileData = (user: any) => {
   return setDoc(doc(db, "users", user.uid), {
     displayName: user.displayName,
     email: user.email,
@@ -88,22 +93,37 @@ export function setUserProfileData(user: any) {
     uid: user.uid,
     photoURL: user?.photoURL,
   });
-}
+};
 
 // used in signIn and in Profile
-export async function getUserProfile(userId: string): Promise<User> {
-  const userRef = doc(db, "users", userId);
-  return new Promise((resolve, reject) => {
-    onSnapshot(userRef, (doc) => {
-      if (doc.exists()) {
-        resolve(doc.data());
-      } else {
-        console.log("Document does not exist");
-        reject(new Error("Document does not exist"));
-      }
-    });
-  });
-}
+export const getUserProfile = async (
+  userId: string | string[]
+): Promise<User | User[]> => {
+  try {
+    if (typeof userId === "string") {
+      const userRef = doc(db, "users", userId);
+      const docSnapshot = await getDoc(userRef);
+      if (docSnapshot.exists()) {
+        const userProfile: User = docSnapshot.data()
+        return userProfile;
+      } else return {} as User;
+    } else {
+      const userPromises: Promise<User>[] = userId.map(async (id) => {
+        const userRef = doc(db, "users", id);
+        const docSnapshot = await getDoc(userRef);
+        if (docSnapshot.exists()) return docSnapshot.data();
+        else return {} as User;
+      });
+
+      const userProfiles = await Promise.all(userPromises);
+      return userProfiles;
+    }
+  } catch (error) {
+    return {} as User;
+  }
+};
+
+// export async function getUserFollowers
 
 // used in AuthModal
 export const logInWithEmailAndPassword = async (

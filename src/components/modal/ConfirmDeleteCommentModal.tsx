@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { ModalWrapper } from '../../app/features/modal/ModalWrapper';
+import { ModalWrapper } from '../../ui/modal/ModalWrapper';
 import { Button, Stack, Typography } from '@mui/material';
 import { toggleModal } from '../../app/features/modal/modalSlice';
 
