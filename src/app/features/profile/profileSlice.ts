@@ -1,26 +1,17 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { User } from "../auth/authSlice";
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { User } from '../auth/authSlice';
 
-export type ProfileState = {
+export type ProfileState = User & {
   error: boolean;
-  createdAt: number;
-  displayName: string;
-  email: string;
-  uid: string;
-  photoURL?: string;
-  followerUIDs?: string[];
-  followingUIDs?: string[];
-  followerProfiles?: User[];
-  followingProfiles?: User[];
 };
 
 const initialState: ProfileState = {
   error: false,
   createdAt: new Date().getTime(),
-  displayName: "",
-  email: "",
-  uid: "",
-  photoURL: "",
+  displayName: '',
+  email: '',
+  uid: '',
+  photoURL: '',
   followerUIDs: [],
   followingUIDs: [],
   followerProfiles: [],
@@ -28,7 +19,7 @@ const initialState: ProfileState = {
 };
 
 const profileSlice = createSlice({
-  name: "profile",
+  name: 'profile',
   initialState,
   reducers: {
     setProfile: (state, { payload }: PayloadAction<User>) => {
@@ -52,7 +43,7 @@ const profileSlice = createSlice({
     },
     setFollowingProfiles: (state, { payload }: PayloadAction<User[]>) => {
       state.followingProfiles = payload;
-    }
+    },
   },
 });
 

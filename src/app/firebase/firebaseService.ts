@@ -9,6 +9,8 @@ import {
   setDoc,
   arrayUnion,
   getDoc,
+  DocumentSnapshot,
+  DocumentData,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import {
@@ -28,7 +30,7 @@ const storage = firebase.storage();
 const auth = getAuth();
 
 // adds doc id to data
-export function dataFromSnapshot(snapshot: any) {
+export function dataFromSnapshot(snapshot: DocumentSnapshot<DocumentData>) {
   if (!snapshot.exists) return undefined;
   const data = snapshot.data();
   return {
@@ -309,6 +311,7 @@ export async function updateAttendees(
   }
 }
 
+// used in ProfileHeader
 export async function updateFollowers(
   followerUid: string,
   followingUid: string,
@@ -344,3 +347,15 @@ export async function updateFollowers(
     console.error("Error updating followers:", error);
   }
 }
+
+export const addEventChatComment = async (eventId: string, comment: string) => {
+  const user = auth.currentUser;
+  const newComment = {
+    displayName: user?.displayName,
+    photoURL: user?.photoURL,
+    uid: user?.uid,
+    text: comment,
+    date: Date.now(),
+  };  
+  return firebase.database().ref(`chat/${eventId}`).push(newComment);
+};

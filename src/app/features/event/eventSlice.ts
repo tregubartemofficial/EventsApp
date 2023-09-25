@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type Event = {
   uid: string;
@@ -25,20 +25,22 @@ export type Event = {
   }>;
 };
 
-export type Filter = "ALL" | "GOING" | "HOSTING";
+export type Filter = 'ALL' | 'GOING' | 'HOSTING';
 
 type EventState = {
   events: Event[];
   filter: Filter;
+  comments: any[];
 };
 
 const initialState: EventState = {
   events: [],
-  filter: "ALL",
+  filter: 'ALL',
+  comments: [],
 };
 
 export const eventSlice = createSlice({
-  name: "event",
+  name: 'event',
   initialState,
   reducers: {
     addEvent: (state, { payload }: PayloadAction<Event>) => {
@@ -63,9 +65,18 @@ export const eventSlice = createSlice({
     setFilter: (state, { payload }: PayloadAction<Filter>) => {
       state.filter = payload;
     },
+    setEventComments: (state, { payload }: PayloadAction<any[]>) => {
+      state.comments = payload;
+    },
   },
 });
 
-export const { addEvent, updateEvent, deleteEvent, fetchEvent, setFilter } =
-  eventSlice.actions;
+export const {
+  addEvent,
+  updateEvent,
+  deleteEvent,
+  fetchEvent,
+  setFilter,
+  setEventComments,
+} = eventSlice.actions;
 export default eventSlice;

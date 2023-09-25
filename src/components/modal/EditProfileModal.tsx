@@ -1,5 +1,4 @@
 import React from "react";
-import { ModalWrapper } from "../../ui/modal/ModalWrapper";
 import {
   Avatar,
   Button,
@@ -13,6 +12,8 @@ import * as yup from "yup";
 import { toggleModal } from "../../app/features/modal/modalSlice";
 import { updateUserAvatar, updateUserProfile } from "../../app/firebase/firebaseService";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { User } from "../../app/features/auth/authSlice";
+import { ModalWrapper } from '../../ui/modal/ModalWrapper';
 
 const StyledTitle = styled(Typography)({
   mr: 2,
@@ -30,7 +31,7 @@ const validationSchema = yup.object({
   bio: yup.string(),
 });
 
-type EditProfileModalProps = { profile: any };
+type EditProfileModalProps = { profile: User };
 
 const EditProfileModal = ({ profile }: EditProfileModalProps) => {
   const dispatch = useAppDispatch();
@@ -46,8 +47,8 @@ const EditProfileModal = ({ profile }: EditProfileModalProps) => {
   const { values, errors, touched, handleChange, handleBlur, handleSubmit, } =
     useFormik({
       initialValues: {
-        name: "",
-        bio: "",
+        name: profile?.displayName,
+        bio: profile?.bio,
       },
       onSubmit: ({name, bio}) => {
         updateUserProfile({displayName: name, bio: bio});
@@ -62,7 +63,7 @@ const EditProfileModal = ({ profile }: EditProfileModalProps) => {
         <StyledTitle variant="h5">EDIT PROFILE</StyledTitle>
         <Avatar
           alt={profile?.displayName}
-          src={profile?.photoURL}
+          src={profile?.photoURL!}
           sx={{
             height: 80,
             width: 80,
