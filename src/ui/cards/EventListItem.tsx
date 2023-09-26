@@ -18,9 +18,9 @@ import { motion, useViewportScroll, useTransform } from 'framer-motion';
 type EventListItemProps = { event: Event; isProfile?: boolean };
 
 const EventListItem = ({ event, isProfile = false }: EventListItemProps) => {
-  const { scrollYProgress } = useViewportScroll();
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.3]);
-  console.log(scale, scrollYProgress);
+  // const { scrollYProgress } = useViewportScroll();
+  // const scale = useTransform(scrollYProgress, [0, 1], [1, 0.3]);
+  // console.log(scale, scrollYProgress);
   
 
   const deserializedDate = new Date(event.date);

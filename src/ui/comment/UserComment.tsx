@@ -16,39 +16,60 @@ import Answer from './Answer';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { toggleModal } from '../../app/features/modal/modalSlice';
 import ConfirmDeleteCommentModal from '../../components/modal/ConfirmDeleteCommentModal';
+import { Comment } from '../../app/features/event/eventSlice';
 
-const Comment = () => {
+type UserCommentProps = { comment: Comment };
+
+const showTime = (time: number) => {
+  const days = Math.floor(time / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((time / (1000 * 60 * 60)));
+  const minutes = Math.floor((time / (1000 * 60)));
+
+  if (minutes > 60) return  `${hours} hourse ago` 
+  if (hours > 24) return `${days} days ago`
+  return `${minutes} minutes ago`;
+};
+
+const UserComment = ({ comment }: UserCommentProps) => {
   const dispatch = useAppDispatch();
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
   const [isEditInputVisible, setIsEditInputVisible] = useState(false);
+  const timeAgo = showTime(new Date().getTime() - Number(comment.date));
+  
 
   return (
     <>
       <Stack spacing={2} alignItems='stretch' component={ListItem}>
         <Stack alignItems='center' direction='row' spacing={1}>
           <ListItemAvatar>
-            <Avatar alt='Remy Sharp' src='/' />
+            <Avatar alt={comment.displayName} src={comment.photoURL} />
           </ListItemAvatar>
-          <ListItemText primary='User name' />
-          <ListItemText secondary='Time ago' />
+          <ListItemText primary={comment.displayName} />
+          <ListItemText secondary={timeAgo} />
           <Button
-            onClick={() => setIsAnswerVisible(!isAnswerVisible)}
+            onClick={() => {
+              setIsAnswerVisible(!isAnswerVisible);
+              setIsEditInputVisible(false);
+            }}
             startIcon={<ReplyIcon />}
           >
             Reply
+          </Button>
+          <Button
+            onClick={() => {
+              setIsEditInputVisible(!isEditInputVisible);
+              setIsAnswerVisible(false);
+            }}
+            startIcon={<EditIcon />}
+          >
+            Edit
           </Button>
           <Button
             color='error'
             startIcon={<DeleteIcon />}
             onClick={() => dispatch(toggleModal('confirmDelete'))}
           >
-            Delte
-          </Button>
-          <Button
-            onClick={() => setIsEditInputVisible(!isEditInputVisible)}
-            startIcon={<EditIcon />}
-          >
-            Edit
+            Delete
           </Button>
         </Stack>
         <Grow
@@ -61,8 +82,7 @@ const Comment = () => {
           <Stack spacing={2}>
             <TextField
               variant='outlined'
-              value='Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto voluptas temporibus libero deserunt eligendi quod voluptate maxime ipsa cupiditate iusto, modi, aliquid eveniet ad voluptatem repudiandae ullam voluptatum facilis ex.
-      Perferendis cum '
+              value={comment.text}
               multiline
               maxRows={7}
             />
@@ -76,11 +96,7 @@ const Comment = () => {
           appear={false}
           exit={false}
         >
-          <ListItemText
-            primary='Lorem deserunt eligeatem repudiandae ullam voluptatum facilis ex.
-      Perferendis cum doloribus eveniet ipsa autem consectetur sapiente, excepturi sint ullam! Cum ipsa alias amet! Minima dolorum vero doloribus dolorem aliquam nisi voluptatibus, suscipit consectetur voluptatem id libero eum eos.
- Labore natus nulla vie.'
-          />
+          <ListItemText primary={comment.text} />
         </Grow>
       </Stack>
       <Answer isAnswerVisible={isAnswerVisible} />
@@ -89,4 +105,4 @@ const Comment = () => {
   );
 };
 
-export default Comment;
+export default UserComment;

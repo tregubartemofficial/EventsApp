@@ -25,12 +25,20 @@ export type Event = {
   }>;
 };
 
+export type Comment = {
+  date: number;
+  displayName: string;
+  photoURL: string;
+  text: string;
+  uid: string;
+}
+
 export type Filter = 'ALL' | 'GOING' | 'HOSTING';
 
 type EventState = {
   events: Event[];
   filter: Filter;
-  comments: any[];
+  comments: Comment[];
 };
 
 const initialState: EventState = {
@@ -65,7 +73,7 @@ export const eventSlice = createSlice({
     setFilter: (state, { payload }: PayloadAction<Filter>) => {
       state.filter = payload;
     },
-    setEventComments: (state, { payload }: PayloadAction<any[]>) => {
+    setEventComments: (state, { payload }: PayloadAction<Comment[]>) => {
       state.comments = payload;
     },
   },

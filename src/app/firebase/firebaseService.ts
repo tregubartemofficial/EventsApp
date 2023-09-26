@@ -359,3 +359,7 @@ export const addEventChatComment = async (eventId: string, comment: string) => {
   };  
   return firebase.database().ref(`chat/${eventId}`).push(newComment);
 };
+
+export const getEventChatRef = (eventId: string) => {
+  return firebase.database().ref(`chat/${eventId}`).orderByKey();
+}
