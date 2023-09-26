@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Button,
   Card,
+  Divider,
   List,
   ListItem,
   ListItemText,
@@ -9,10 +10,11 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
-import { Comment, Event, setEventComments } from '../../app/features/event/eventSlice';
+import { Event, setEventComments } from '../../app/features/event/eventSlice';
 import UserComment from '../../ui/comment/UserComment';
 import {
   addEventChatComment,
+  firebaseObjectToArray,
   getEventChatRef,
 } from '../../app/firebase/firebaseService';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -33,39 +35,40 @@ const EventDetailedChat = ({ event }: EventDetailedChatProps) => {
 
   useEffect(() => {
     getEventChatRef(event.id).on('value', (snapshot) => {
-      const date: Comment[] = Object.keys(snapshot.val()).map(
-        (key) => snapshot.val()[key]
-      );
-
-      dispatch(setEventComments(date));
+      if (snapshot.exists()) {
+        dispatch(setEventComments(firebaseObjectToArray(snapshot.val())));
+      }
     });
   }, [event.id, dispatch]);
 
   return (
     <Card>
       <List subheader={<ListSubheader>Chat about this event</ListSubheader>}>
-        {comments[0] && comments.map((comment) => {
-          return <UserComment comment={comment} key={comment.date} />;
-        })}
+        {comments[0] &&
+          comments.map((comment) => {
+            return <UserComment comment={comment} key={comment.date} />;
+          })}
         {isAuth ? (
-          <Stack spacing={2} alignItems='stretch' component={ListItem}>
-            <TextField
-              name='new comment'
-              variant='outlined'
-              multiline
-              maxRows={7}
-              value={commentInput}
-              onChange={(e) => setCommentInput(e.target.value)}
-              placeholder='Add your comment'
-            />
-            <Button
-              onClick={handleSubmitComment}
-              color='info'
-              variant='contained'
-            >
-              Add comment
-            </Button>
-          </Stack>
+          <>
+            <Divider />
+            <Stack spacing={2} alignItems='stretch' component={ListItem}>
+              <TextField
+                variant='outlined'
+                multiline
+                maxRows={7}
+                value={commentInput}
+                onChange={(e) => setCommentInput(e.target.value)}
+                placeholder='Add your comment'
+              />
+              <Button
+                onClick={handleSubmitComment}
+                color='info'
+                variant='contained'
+              >
+                Add comment
+              </Button>
+            </Stack>
+          </>
         ) : (
           <ListItem>
             <ListItemText

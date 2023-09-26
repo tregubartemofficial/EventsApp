@@ -6,7 +6,7 @@ import { useFirestoreCollection } from "../../hooks/useFirestoreCollection";
 import EventSkeleton from "./EventSkeleton";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import EventListItem from "../../ui/cards/EventListItem";
+import EventListItem from "../../ui/listItems/EventListItem";
 
 const ListItems = () => {
   const dispatch = useAppDispatch();

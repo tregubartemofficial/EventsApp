@@ -29,7 +29,7 @@ const Answer = ({ isAnswerVisible }: { isAnswerVisible : boolean}) => {
         </ListItemAvatar>
         <TextField
           variant="outlined"
-          placeholder="Add a comment"
+          placeholder="Add a reply"
           multiline
           maxRows={5}
           value={commentInput}

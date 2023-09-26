@@ -14,7 +14,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { listenToEventsFromFirestore } from "../../app/firebase/firebaseService";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { Event, fetchEvent } from "../../app/features/event/eventSlice";
-import EventListItem from "../../ui/cards/EventListItem";
+import EventListItem from "../../ui/listItems/EventListItem";
 import { motion } from "framer-motion";
 
 type ProfileContentProps = { profile: ProfileState };
