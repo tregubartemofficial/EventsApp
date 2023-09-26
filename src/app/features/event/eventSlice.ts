@@ -31,6 +31,7 @@ export type Comment = {
   photoURL: string;
   text: string;
   uid: string;
+  id: string;
 }
 
 export type Filter = 'ALL' | 'GOING' | 'HOSTING';

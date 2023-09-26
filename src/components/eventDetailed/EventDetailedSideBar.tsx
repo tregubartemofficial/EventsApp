@@ -21,7 +21,6 @@ const EventDetailedSideBar = ({ event }: EventDetailedSideBarProps) => {
       <List
         subheader={
           <ListSubheader
-            id="subheader"
             sx={{ bgcolor: grey[900] }}
           >
             {event.attendees.length} People going

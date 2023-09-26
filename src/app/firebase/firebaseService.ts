@@ -46,7 +46,9 @@ export const dataFromSnapshot = (snapshot: DocumentSnapshot<DocumentData>) => {
 
 // used in fetch comments
 export const firebaseObjectToArray = (data: any): Comment[] => {
-  return Object.keys(data).map((key) => data[key]);
+  return Object.keys(data).map((key) => {
+    return { ...data[key], id: key };
+  });
 };
 
 // used in EventList and ProfileContent
@@ -358,6 +360,7 @@ export const updateFollowers = async (
   }
 };
 
+// used in UserComment
 export const addEventChatComment = async (eventId: string, comment: string) => {
   const user = auth.currentUser;
   const newComment = {
@@ -372,4 +375,15 @@ export const addEventChatComment = async (eventId: string, comment: string) => {
 
 export const getEventChatRef = (eventId: string) => {
   return firebase.database().ref(`chat/${eventId}`).orderByKey();
+};
+
+export const deleteEventComment = (eventId: string, commentId: string) => {
+  return firebase.database().ref(`chat/${eventId}/${commentId}`).remove();
+};
+
+export const updateEventComment = (eventId: string, commentId:string, text:string) => {
+  return firebase
+    .database()
+    .ref(`chat/${eventId}/${commentId}`)
+    .update({ text: text});
 };

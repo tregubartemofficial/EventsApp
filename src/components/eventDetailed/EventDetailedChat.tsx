@@ -11,7 +11,7 @@ import {
   TextField,
 } from '@mui/material';
 import { Event, setEventComments } from '../../app/features/event/eventSlice';
-import UserComment from '../../ui/comment/UserComment';
+import UserComment from '../comment/UserComment';
 import {
   addEventChatComment,
   firebaseObjectToArray,
@@ -19,6 +19,7 @@ import {
 } from '../../app/firebase/firebaseService';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { grey } from '@mui/material/colors';
 
 type EventDetailedChatProps = { event: Event };
 
@@ -37,17 +38,33 @@ const EventDetailedChat = ({ event }: EventDetailedChatProps) => {
     getEventChatRef(event.id).on('value', (snapshot) => {
       if (snapshot.exists()) {
         dispatch(setEventComments(firebaseObjectToArray(snapshot.val())));
+      } else {
+        dispatch(setEventComments([]));
       }
     });
   }, [event.id, dispatch]);
 
   return (
     <Card>
-      <List subheader={<ListSubheader>Chat about this event</ListSubheader>}>
-        {comments[0] &&
+      <List
+        subheader={
+          <ListSubheader sx={{ bgcolor: grey[900] }}>
+            Chat about this event
+          </ListSubheader>
+        }
+      >
+        {comments[0] ? (
           comments.map((comment) => {
-            return <UserComment comment={comment} key={comment.date} />;
-          })}
+            return <UserComment eventId={event.id} comment={comment} key={comment.date} />;
+          })
+        ) : (
+          <ListItem>
+            <ListItemText
+              sx={{ textAlign: 'center' }}
+              primary='No comments for this event yet'
+            />
+          </ListItem>
+        )}
         {isAuth ? (
           <>
             <Divider />

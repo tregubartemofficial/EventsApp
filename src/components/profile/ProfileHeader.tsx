@@ -78,11 +78,11 @@ const ProfileHeader = ({
                   Edit Profile
                 </Button>
               )}
-              {!isAuthUserProfile && isAuth && !isFollowing && (
+              {!isAuthUserProfile && !isFollowing && (
                 <Button
                   variant='contained'
                   sx={{ width: '45%' }}
-                  disabled={profile.error}
+                  disabled={profile.error || !isAuth}
                   onClick={() =>
                     updateFollowers(
                       currUserUid,
@@ -95,7 +95,7 @@ const ProfileHeader = ({
                   Follow
                 </Button>
               )}
-              {!isAuthUserProfile && isAuth && isFollowing && (
+              {!isAuthUserProfile && isFollowing && (
                 <Button
                   variant='contained'
                   sx={{ width: '45%' }}
