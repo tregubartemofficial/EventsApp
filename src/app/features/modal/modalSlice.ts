@@ -3,7 +3,8 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 export type ModalState = {
   editProfile: boolean;
   auth: boolean;
-  confirmDelete: boolean;
+  confirmDeleteComment: boolean;
+  confirmDeleteEvent: boolean;
   follower: boolean;
   following: boolean;
 };
@@ -11,7 +12,8 @@ export type ModalState = {
 const initialState: ModalState = {
   editProfile: false,
   auth: false,
-  confirmDelete: false,
+  confirmDeleteComment: false,
+  confirmDeleteEvent: false,
   follower: false,
   following: false,
 };

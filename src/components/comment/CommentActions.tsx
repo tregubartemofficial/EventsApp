@@ -84,7 +84,7 @@ const CommentActions = ({
         {isUserComment && (
           <MenuItem
             onClick={() => {
-              dispatch(toggleModal('confirmDelete'));
+              dispatch(toggleModal('confirmDeleteComment'));
               handleCloseButtonMenu();
             }}
           >

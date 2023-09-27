@@ -14,20 +14,20 @@ const ConfirmDeleteCommentModal = ({
   const dispatch = useAppDispatch();
 
   return (
-    <ModalWrapper modalId='confirmDelete'>
+    <ModalWrapper modalId='confirmDeleteComment'>
       <Stack spacing={2}>
         <Typography variant='h5'>Delete comment</Typography>
         <Typography variant='h6'>
           Are you sure you want to delete this comment?
         </Typography>
         <Stack direction='row' justifyContent='flex-end' spacing={2}>
-          <Button onClick={() => dispatch(toggleModal('confirmDelete'))}>
+          <Button onClick={() => dispatch(toggleModal('confirmDeleteComment'))}>
             Cancel
           </Button>
           <Button
             color='error'
             onClick={() => {
-              dispatch(toggleModal('confirmDelete'));
+              dispatch(toggleModal('confirmDeleteComment'));
               deleteEventComment(eventId, commentId);
             }}
           >

@@ -93,6 +93,11 @@ export const addEventToFirestore = (event: Event, currUser: User) => {
   });
 };
 
+// used in EventDetailed
+export const deleteEventFromFirestore = (eventId: string) => {
+  return db.collection('events').doc(eventId).delete();
+};
+
 // used in EventForm
 export const updateEventsInFirestore = (event: Event) => {
   return db.collection('events').doc(event.id).update(event);
@@ -360,7 +365,7 @@ export const updateFollowers = async (
   }
 };
 
-// used in UserComment
+// used in CommentActions
 export const addEventChatComment = async (eventId: string, comment: string) => {
   const user = auth.currentUser;
   const newComment = {
@@ -373,17 +378,24 @@ export const addEventChatComment = async (eventId: string, comment: string) => {
   return firebase.database().ref(`chat/${eventId}`).push(newComment);
 };
 
+// used in UserComment
 export const getEventChatRef = (eventId: string) => {
   return firebase.database().ref(`chat/${eventId}`).orderByKey();
 };
 
+// used in CommentActions
 export const deleteEventComment = (eventId: string, commentId: string) => {
   return firebase.database().ref(`chat/${eventId}/${commentId}`).remove();
 };
 
-export const updateEventComment = (eventId: string, commentId:string, text:string) => {
+// used in CommentActions
+export const updateEventComment = (
+  eventId: string,
+  commentId: string,
+  text: string
+) => {
   return firebase
     .database()
     .ref(`chat/${eventId}/${commentId}`)
-    .update({ text: text});
+    .update({ text: text });
 };

@@ -17,7 +17,7 @@ import { Event } from "../../app/features/event/eventSlice";
 type EventDetailedHeaderProps = {event: Event}
 
 const EventDetailedHeader = ({ event }: EventDetailedHeaderProps) => {
-  const deserializedDate = new Date(event.date);
+  const deserializedDate = new Date(event.date).toUTCString();
   const dispatch = useAppDispatch();
   const { currUser } = useAppSelector((state) => state.auth);
 
@@ -26,7 +26,7 @@ const EventDetailedHeader = ({ event }: EventDetailedHeaderProps) => {
       <CardContent sx={{ bgcolor: grey[600], minHeight: 100 }}>
         <Typography variant="h5">{event.title}</Typography>
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          {deserializedDate.toUTCString()}
+          {deserializedDate}
         </Typography>
         <Typography variant="body2">Hosted by {event.hostedBy}</Typography>
       </CardContent>
@@ -63,9 +63,9 @@ const EventDetailedHeader = ({ event }: EventDetailedHeaderProps) => {
                   Manage event
                 </Button>
                 <Button
-                  // onClick={() => dispatch(deleteEvent(event.id))}
-                  component={Link}
-                  to={`/events`}
+                  onClick={() => {
+                    dispatch(toggleModal("confirmDeleteEvent"));
+                  }}
                   variant="contained"
                   color="error"
                   sx={{ ml: "5px" }}

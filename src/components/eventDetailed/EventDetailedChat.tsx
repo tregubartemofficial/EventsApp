@@ -53,21 +53,8 @@ const EventDetailedChat = ({ event }: EventDetailedChatProps) => {
           </ListSubheader>
         }
       >
-        {comments[0] ? (
-          comments.map((comment) => {
-            return <UserComment eventId={event.id} comment={comment} key={comment.date} />;
-          })
-        ) : (
-          <ListItem>
-            <ListItemText
-              sx={{ textAlign: 'center' }}
-              primary='No comments for this event yet'
-            />
-          </ListItem>
-        )}
         {isAuth ? (
           <>
-            <Divider />
             <Stack spacing={2} alignItems='stretch' component={ListItem}>
               <TextField
                 variant='outlined'
@@ -85,12 +72,31 @@ const EventDetailedChat = ({ event }: EventDetailedChatProps) => {
                 Add comment
               </Button>
             </Stack>
+            <Divider />
           </>
         ) : (
           <ListItem>
             <ListItemText
               sx={{ textAlign: 'center' }}
               primary='Please login to comment'
+            />
+          </ListItem>
+        )}
+        {comments[0] ? (
+          comments.map((comment) => {
+            return (
+              <UserComment
+                eventId={event.id}
+                comment={comment}
+                key={comment.date}
+              />
+            );
+          })
+        ) : (
+          <ListItem>
+            <ListItemText
+              sx={{ textAlign: 'center' }}
+              primary='No comments for this event yet'
             />
           </ListItem>
         )}
