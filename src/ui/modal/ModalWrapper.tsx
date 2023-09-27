@@ -1,8 +1,8 @@
 import { Backdrop, Box, Fade, Modal } from '@mui/material';
 import React from 'react'
-import { ModalState, toggleModal } from './modalSlice';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { ModalState, toggleModal } from '../../app/features/modal/modalSlice';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
 
 const style = {
   position: "absolute",

@@ -6,7 +6,7 @@ import { useFirestoreCollection } from "../../hooks/useFirestoreCollection";
 import EventSkeleton from "./EventSkeleton";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import EventCard from "../../ui/cards/EventCard";
+import EventListItem from "../../ui/listItems/EventListItem";
 
 const ListItems = () => {
   const dispatch = useAppDispatch();
@@ -25,7 +25,7 @@ const ListItems = () => {
       ) : (
         <List sx={{ width: "100%", maxWidth: 500 }}>
           {eventState.events.map((event) => {
-            return <EventCard event={event} key={event.id} />;
+            return <EventListItem event={event} key={event.id} />;
           })}
         </List>
       )}

@@ -2,102 +2,147 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   signInWithEmailAndPassword,
-} from "firebase/auth";
-import firebase from "./firebaseConfig";
-import { doc, setDoc, onSnapshot } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { User, signIn, updateAvatarPhoto } from "../features/auth/authSlice";
-import { toggleModal } from "../features/modal/modalSlice";
-import { Event, Filter } from "../features/event/eventSlice";
-import { AppDispatch } from "../../store";
-import { NavigateFunction } from "react-router";
+} from 'firebase/auth';
+import firebase from './firebaseConfig';
+import {
+  doc,
+  setDoc,
+  arrayUnion,
+  getDoc,
+  DocumentSnapshot,
+  DocumentData,
+} from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import {
+  User,
+  signIn,
+  signOut,
+  updateAvatarPhoto,
+} from '../features/auth/authSlice';
+import { toggleModal } from '../features/modal/modalSlice';
+import {
+  Comment,
+  Event,
+  Filter,
+  setFilter,
+} from '../features/event/eventSlice';
+import { AppDispatch } from '../../store';
+import { NavigateFunction } from 'react-router';
+import { setFollowers } from '../features/profile/profileSlice';
 
 const db = firebase.firestore();
 const storage = firebase.storage();
 const auth = getAuth();
 
 // adds doc id to data
-export function dataFromSnapshot(snapshot: any) {
+export const dataFromSnapshot = (snapshot: DocumentSnapshot<DocumentData>) => {
   if (!snapshot.exists) return undefined;
   const data = snapshot.data();
   return {
     ...data,
     id: snapshot.id, // adding id
   };
-}
+};
+
+// used in fetch comments
+export const firebaseObjectToArray = (data: any): Comment[] => {
+  return Object.keys(data).map((key) => {
+    return { ...data[key], id: key };
+  });
+};
 
 // used in EventList and ProfileContent
-export function listenToEventsFromFirestore(
-  filter: Filter = "ALL",
+export const listenToEventsFromFirestore = (
+  filter: Filter = 'ALL',
   profileUid?: string
-) {
+) => {
   const user = auth.currentUser;
-  let eventRef = db.collection("events").orderBy("date");
+  let eventRef = db.collection('events').orderBy('date');
   if (user?.uid) {
     switch (filter) {
-      case "GOING":
+      case 'GOING':
         if (profileUid)
-          return eventRef.where("attendeesUid", "array-contains", profileUid);
-        return eventRef.where("attendeesUid", "array-contains", user?.uid);
-      case "HOSTING":
-        return eventRef.where("uid", "==", user?.uid);
+          return eventRef.where('attendeesUid', 'array-contains', profileUid);
+        return eventRef.where('attendeesUid', 'array-contains', user?.uid);
+      case 'HOSTING':
+        return eventRef.where('uid', '==', user?.uid);
       default:
         return eventRef;
     }
   }
   return eventRef;
-}
+};
 
 // used in EventDetailed
-export function listenToEventFromFirestore(eventId: string) {
-  return db.collection("events").doc(eventId);
-}
+export const listenToEventFromFirestore = (eventId: string) => {
+  return db.collection('events').doc(eventId);
+};
 
 // used in EventForm
-export function addEventToFirestore(event: Event, currUser: User) {
-  return db.collection("events").add({
+export const addEventToFirestore = (event: Event, currUser: User) => {
+  return db.collection('events').add({
     ...event,
     hostedBy: currUser.displayName,
     hostPhotoURL: currUser.photoURL,
     uid: currUser.uid,
-    attendees: firebase.firestore.FieldValue.arrayUnion({
+    attendees: arrayUnion({
       uid: currUser.uid,
       name: currUser.displayName,
       photoURL: currUser.photoURL,
     }),
   });
-}
+};
+
+// used in EventDetailed
+export const deleteEventFromFirestore = (eventId: string) => {
+  return db.collection('events').doc(eventId).delete();
+};
 
 // used in EventForm
-export function updateEventsInFirestore(event: Event) {
-  return db.collection("events").doc(event.id).update(event);
-}
+export const updateEventsInFirestore = (event: Event) => {
+  return db.collection('events').doc(event.id).update(event);
+};
 
 // used in registration functions
-export function setUserProfileData(user: any) {
-  return setDoc(doc(db, "users", user.uid), {
+export const setUserProfileData = (user: any) => {
+  return setDoc(doc(db, 'users', user.uid), {
     displayName: user.displayName,
     email: user.email,
     createdAt: user.createdAt,
     uid: user.uid,
     photoURL: user?.photoURL,
   });
-}
+};
 
 // used in signIn and in Profile
-export async function getUserProfile(userId: string): Promise<User> {
-  const userRef = doc(db, "users", userId);
-  return new Promise((resolve, reject) => {
-    onSnapshot(userRef, (doc) => {
-      if (doc.exists()) {
-        resolve(doc.data());
-      } else {
-        console.log("Document does not exist");
-        reject(new Error("Document does not exist"));
-      }
-    });
-  });
-}
+export const getUserProfile = async (
+  userId: string | string[]
+): Promise<User | User[]> => {
+  try {
+    if (typeof userId === 'string') {
+      const userRef = doc(db, 'users', userId);
+      const docSnapshot = await getDoc(userRef);
+      if (docSnapshot.exists()) {
+        const userProfile: User = docSnapshot.data();
+        return userProfile;
+      } else return {} as User;
+    } else {
+      const userPromises: Promise<User>[] = userId.map(async (id) => {
+        const userRef = doc(db, 'users', id);
+        const docSnapshot = await getDoc(userRef);
+        if (docSnapshot.exists()) return docSnapshot.data();
+        else return {} as User;
+      });
+
+      const userProfiles = await Promise.all(userPromises);
+      return userProfiles;
+    }
+  } catch (error) {
+    return {} as User;
+  }
+};
+
+// export async function getUserFollowers
 
 // used in AuthModal
 export const logInWithEmailAndPassword = async (
@@ -118,10 +163,10 @@ export const logInWithEmailAndPassword = async (
         displayName: profile.displayName,
       })
     );
-    dispatch(toggleModal("auth"));
-    navigate("/events");
+    dispatch(toggleModal('auth'));
+    navigate('/events');
   } catch (error) {
-    setHelperText("Something went wrong with email or password");
+    setHelperText('Something went wrong with email or password');
   }
 };
 
@@ -153,7 +198,7 @@ export const registerWithEmailAndPassword = async (
 
       const userProfileData: User = {
         uid: user.uid,
-        photoURL: "",
+        photoURL: '',
         displayName: name,
         email: user.email,
         createdAt: Math.floor(Date.now() / 1000),
@@ -161,14 +206,17 @@ export const registerWithEmailAndPassword = async (
       await setUserProfileData(userProfileData);
     }
 
-    navigate("/events");
+    navigate('/events');
   } catch (error) {
     setHelperText(`Problem with username or password`);
   }
 };
 
 // used in AuthModal and RegisterForm to register and singIn
-export async function socialLogin(dispatch: AppDispatch, navigate: NavigateFunction) {
+export const socialLogin = async (
+  dispatch: AppDispatch,
+  navigate: NavigateFunction
+) => {
   const provider = new firebase.auth.GoogleAuthProvider();
   try {
     const result = await firebase.auth().signInWithPopup(provider);
@@ -182,7 +230,7 @@ export async function socialLogin(dispatch: AppDispatch, navigate: NavigateFunct
           createdAt: Math.floor(Date.now() / 1000),
         });
       }
-      const profile:any = await getUserProfile(result.user.uid);
+      const profile: any = await getUserProfile(result.user.uid);
       dispatch(
         signIn({
           email: profile.email,
@@ -191,31 +239,49 @@ export async function socialLogin(dispatch: AppDispatch, navigate: NavigateFunct
           displayName: profile.displayName,
         })
       );
-      navigate("/events");
+      navigate('/events');
     }
   } catch (error: any) {
     console.log(error.message);
   }
-}
+};
+
+export const signOutFromFirebase = async (
+  dispatch: AppDispatch,
+  navigate: NavigateFunction
+) => {
+  try {
+    await auth.signOut();
+    dispatch(signOut());
+    dispatch(setFilter('ALL'));
+    navigate('/');
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 // used in EditProfileModal
-export async function updateUserProfile(profile: User) {
+export const updateUserProfile = async (profile: User) => {
   const user = auth.currentUser;
   try {
-    return await db.collection("users").doc(user?.uid).update(profile);
+    return await db.collection('users').doc(user?.uid).update(profile);
   } catch (error) {
     throw error;
   }
-}
+};
 
 // used in EditProfileModal
-export async function updateUserAvatar(img: File, profile: User, dispatch: AppDispatch) {
+export const updateUserAvatar = async (
+  img: File,
+  profile: User,
+  dispatch: AppDispatch
+) => {
   if (profile.photoURL) {
     try {
       const previousAvatarRef = storage.refFromURL(profile.photoURL);
       await previousAvatarRef.delete();
     } catch (error) {
-      console.error("Error deleting previous avatar photo:", error);
+      console.error('Error deleting previous avatar photo:', error);
     }
   }
   const imgRef = ref(storage, `userAvatars/${img.name}${profile.createdAt}`);
@@ -227,42 +293,109 @@ export async function updateUserAvatar(img: File, profile: User, dispatch: AppDi
       photoURL: avatarURL,
     })
   );
-}
+};
 
 // used in EventDetailed
-export async function updateAttendees(
+export const updateAttendees = async (
   eventId: string,
   currUser: User,
-  action: string
-) {
+  action: 'ADD' | 'REMOVE'
+) => {
   try {
-    const eventRef = db.collection("events").doc(eventId);
+    const eventRef = db.collection('events').doc(eventId);
     const eventDoc = await eventRef.get();
     const eventData = eventDoc.data();
-    // const userRef = db.collection("users").doc(currUser.uid);
-    // const userDoc = await userRef.get();
-    // const userData = userDoc.data();
-
     let updatedAttendees = [...eventData?.attendees];
 
-    if (action === "ADD") {
+    if (action === 'ADD') {
       updatedAttendees.push({
         name: currUser.displayName,
         uid: currUser.uid,
         photoURL: currUser.photoURL,
       });
-    } else if (action === "REMOVE") {
+    } else if (action === 'REMOVE') {
       updatedAttendees = updatedAttendees.filter(
         (attendee) => attendee.uid !== currUser.uid
       );
-    } else {
-      throw new Error("Invalid action specified.");
     }
+
     await eventRef.update({
       attendees: updatedAttendees,
       attendeesUid: updatedAttendees.map((attendee) => attendee.uid),
     });
   } catch (error) {
-    console.error("Error updating attendees:", error);
+    console.error('Error updating attendees:', error);
   }
-}
+};
+
+// used in ProfileHeader
+export const updateFollowers = async (
+  followerUid: string,
+  followingUid: string,
+  action: 'FOLLOW' | 'UNFOLLOW',
+  dispatch: AppDispatch
+) => {
+  const followerRef = db.collection('users').doc(followerUid);
+  const followingRef = db.collection('users').doc(followingUid);
+
+  const followerDoc = await followerRef.get();
+  const followingDoc = await followingRef.get();
+
+  let { followingUIDs }: any = followerDoc.data();
+  let { followerUIDs }: any = followingDoc.data();
+
+  try {
+    if (action === 'FOLLOW') {
+      followerUIDs.push(followerUid);
+      followingUIDs.push(followingUid);
+    } else if (action === 'UNFOLLOW') {
+      followerUIDs = followerUIDs.filter(
+        (follower: string) => follower !== followerUid
+      );
+      followingUIDs = followingUIDs.filter(
+        (following: string) => following !== followingUid
+      );
+    }
+
+    await followerRef.update({ followingUIDs: followingUIDs });
+    await followingRef.update({ followerUIDs: followerUIDs });
+    dispatch(setFollowers(followerUIDs));
+  } catch (error) {
+    console.error('Error updating followers:', error);
+  }
+};
+
+// used in CommentActions
+export const addEventChatComment = async (eventId: string, comment: string) => {
+  const user = auth.currentUser;
+  const newComment = {
+    displayName: user?.displayName,
+    photoURL: user?.photoURL,
+    uid: user?.uid,
+    text: comment,
+    date: Date.now(),
+  };
+  return firebase.database().ref(`chat/${eventId}`).push(newComment);
+};
+
+// used in UserComment
+export const getEventChatRef = (eventId: string) => {
+  return firebase.database().ref(`chat/${eventId}`).orderByKey();
+};
+
+// used in CommentActions
+export const deleteEventComment = (eventId: string, commentId: string) => {
+  return firebase.database().ref(`chat/${eventId}/${commentId}`).remove();
+};
+
+// used in CommentActions
+export const updateEventComment = (
+  eventId: string,
+  commentId: string,
+  text: string
+) => {
+  return firebase
+    .database()
+    .ref(`chat/${eventId}/${commentId}`)
+    .update({ text: text });
+};

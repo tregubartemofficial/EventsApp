@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Alert,
   Avatar,
@@ -8,18 +8,35 @@ import {
   Snackbar,
   Stack,
   Typography,
-} from "@mui/material";
-import EditProfileModal from "../modal/EditProfileModal";
-import { toggleModal } from "../../app/features/modal/modalSlice";
-import copy from "clipboard-copy";
-import { grey } from "@mui/material/colors";
-import { ProfileState } from "../../app/features/profile/profileSlice";
-import { useAppDispatch } from "../../hooks/useAppDispatch";
+} from '@mui/material';
+import EditProfileModal from '../modal/EditProfileModal';
+import { toggleModal } from '../../app/features/modal/modalSlice';
+import copy from 'clipboard-copy';
+import { grey } from '@mui/material/colors';
+import { ProfileState } from '../../app/features/profile/profileSlice';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { updateFollowers } from '../../app/firebase/firebaseService';
+import FollowerModal from '../modal/FollowerModal';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import FollowerCard from '../../ui/cards/FollowerCard';
 
-type ProfileHeaderProps = { profile: ProfileState; isAuthUserProfile: boolean };
+type ProfileHeaderProps = {
+  currUserUid: string;
+  profile: ProfileState;
+  isAuth: boolean;
+  isFollowing: boolean;
+  isAuthUserProfile: boolean;
+};
 
-const ProfileHeader = ({ profile, isAuthUserProfile }: ProfileHeaderProps) => {
+const ProfileHeader = ({
+  profile,
+  currUserUid,
+  isAuth,
+  isFollowing,
+  isAuthUserProfile,
+}: ProfileHeaderProps) => {
   const dispatch = useAppDispatch();
+  const modalState = useAppSelector((state) => state.modals);
   const [openMessage, setOpenMessage] = useState(false);
 
   const handleCopyURL = () => {
@@ -30,59 +47,74 @@ const ProfileHeader = ({ profile, isAuthUserProfile }: ProfileHeaderProps) => {
   return (
     <>
       <Grow in={true}>
-        <Card sx={{ marginTop: 2, marginBottom: 2 }}>
-          <Stack sx={{ marginTop: 2, marginBottom: 2 }}>
+        <Card sx={{ my: 2 }}>
+          <Stack sx={{ my: 2 }}>
             <Stack
-              direction="row"
+              direction='row'
               spacing={2}
-              justifyContent="space-around"
-              alignItems="center"
-              sx={{ marginBottom: 2 }}
+              justifyContent='space-around'
+              alignItems='center'
+              sx={{ mb: 2 }}
             >
-              <Stack alignItems="center">
+              <Stack alignItems='center'>
                 <Avatar
                   alt={profile?.displayName}
-                  src={profile?.photoURL}
+                  src={profile?.photoURL!}
                   sx={{ height: 80, width: 80 }}
                 />
                 <Typography>{profile?.displayName}</Typography>
               </Stack>
-              <Stack>
-                <Typography variant="h5">{profile.followers}</Typography>
-                <Typography variant="h6" color={grey[700]}>
-                  Followers
-                </Typography>
-              </Stack>
-              <Stack>
-                <Typography variant="h5">{profile.followers}</Typography>
-                <Typography variant="h6" color={grey[700]}>
-                  Following
-                </Typography>
-              </Stack>
+              <FollowerCard profile={profile} type='following' />
+              <FollowerCard profile={profile} type='follower' />
             </Stack>
-            <Stack flexDirection="row" justifyContent="space-around">
+            <Stack flexDirection='row' justifyContent='space-around'>
               {isAuthUserProfile && (
                 <Button
-                  onClick={() => dispatch(toggleModal("editProfile"))}
-                  variant="contained"
-                  sx={{ width: "45%" }}
+                  onClick={() => dispatch(toggleModal('editProfile'))}
+                  variant='contained'
+                  sx={{ width: '45%' }}
                   disabled={profile.error}
                 >
                   Edit Profile
                 </Button>
               )}
-              {!isAuthUserProfile && (
+              {!isAuthUserProfile && !isFollowing && (
                 <Button
-                  variant="contained"
-                  sx={{ width: "45%" }}
-                  disabled={profile.error}
+                  variant='contained'
+                  sx={{ width: '45%' }}
+                  disabled={profile.error || !isAuth}
+                  onClick={() =>
+                    updateFollowers(
+                      currUserUid,
+                      profile.uid!,
+                      'FOLLOW',
+                      dispatch
+                    )
+                  }
                 >
                   Follow
                 </Button>
               )}
+              {!isAuthUserProfile && isFollowing && (
+                <Button
+                  variant='contained'
+                  sx={{ width: '45%' }}
+                  disabled={profile.error}
+                  onClick={() =>
+                    updateFollowers(
+                      currUserUid,
+                      profile.uid!,
+                      'UNFOLLOW',
+                      dispatch
+                    )
+                  }
+                >
+                  Unfollow
+                </Button>
+              )}
               <Button
-                variant="contained"
-                sx={{ width: "45%" }}
+                variant='contained'
+                sx={{ width: '45%' }}
                 disabled={profile.error}
                 onClick={() => handleCopyURL()}
               >
@@ -92,11 +124,11 @@ const ProfileHeader = ({ profile, isAuthUserProfile }: ProfileHeaderProps) => {
                 open={openMessage}
                 autoHideDuration={2500}
                 onClose={() => setOpenMessage(false)}
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               >
                 <Alert
-                  color="success"
-                  severity="success"
+                  color='success'
+                  severity='success'
                   sx={{ bgcolor: grey[900] }}
                 >
                   Profile URL copied
@@ -107,6 +139,12 @@ const ProfileHeader = ({ profile, isAuthUserProfile }: ProfileHeaderProps) => {
         </Card>
       </Grow>
 
+      {modalState.follower && (
+        <FollowerModal profile={profile} type='follower' />
+      )}
+      {modalState.following && (
+        <FollowerModal profile={profile} type='following' />
+      )}
       <EditProfileModal profile={profile} />
     </>
   );
