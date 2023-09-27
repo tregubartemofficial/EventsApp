@@ -25,9 +25,10 @@ const showTime = (time: number) => {
   const hours = Math.floor(time / (1000 * 60 * 60));
   const minutes = Math.floor(time / (1000 * 60));
 
-  if (minutes > 60 && hours < 24) return `${hours} hourse ago`;
-  if (hours > 24) return `${days} days ago`;
-  return `${minutes} minutes ago`;
+  if (minutes < 60 ) return `${minutes} minutes ago`;
+  if (hours < 24) return `${hours} hours ago`;
+  if (days === 1) return `${days} day ago`;
+  return `${days} days ago`;
 };
 
 const UserComment = ({ comment, eventId }: UserCommentProps) => {
