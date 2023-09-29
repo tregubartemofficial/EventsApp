@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   Button,
   Card,
@@ -17,22 +17,32 @@ import {
   firebaseObjectToArray,
   getEventChatRef,
 } from '../../app/firebase/firebaseService';
+import * as yup from 'yup';
+import { grey } from '@mui/material/colors';
+import { useFormik } from 'formik';
+
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { grey } from '@mui/material/colors';
 
 type EventDetailedChatProps = { event: Event };
 
+const validationSchema = yup.object({
+  text: yup.string().required('Text is required'),
+});
+
 const EventDetailedChat = ({ event }: EventDetailedChatProps) => {
-  const [commentInput, setCommentInput] = useState('');
   const dispatch = useAppDispatch();
   const { comments } = useAppSelector((state) => state.events);
   const { isAuth } = useAppSelector((state) => state.auth);
 
-  const handleSubmitComment = async () => {
-    await addEventChatComment(event.id, commentInput);
-    setCommentInput('');
-  };
+  const {values, handleChange, handleSubmit} = useFormik({
+    initialValues: { text: '' },
+    onSubmit: async(values) => {
+      await addEventChatComment(event.id, values.text);
+      values.text = '';
+    },
+    validationSchema,
+  });
 
   useEffect(() => {
     getEventChatRef(event.id).on('value', (snapshot) => {
@@ -55,22 +65,19 @@ const EventDetailedChat = ({ event }: EventDetailedChatProps) => {
       >
         {isAuth ? (
           <>
-            <Stack spacing={2} alignItems='stretch' component={ListItem}>
-              <TextField
-                variant='outlined'
-                multiline
-                maxRows={7}
-                value={commentInput}
-                onChange={(e) => setCommentInput(e.target.value)}
-                placeholder='Add your comment'
-              />
-              <Button
-                onClick={handleSubmitComment}
-                color='info'
-                variant='contained'
-              >
-                Add comment
-              </Button>
+            <Stack sx={{p:2}} spacing={2} alignItems='stretch' component='form' onSubmit={handleSubmit}>
+                <TextField
+                  variant='outlined'
+                  name='text'
+                  multiline
+                  maxRows={7}
+                  value={values.text}
+                  onChange={handleChange}
+                  placeholder='Add your comment'
+                />
+                <Button type='submit' color='info' variant='contained'>
+                  Add comment
+                </Button>
             </Stack>
             <Divider />
           </>

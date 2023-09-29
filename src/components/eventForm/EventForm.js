@@ -10,14 +10,17 @@ import {
   TextField,
 } from "@mui/material";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import PlaceAutocompleteField from "./PlaceAutocompleteField";
+
 import {
   addEventToFirestore,
   updateEventsInFirestore,
 } from "../../app/firebase/firebaseService";
 import { toggleModal } from "../../app/features/modal/modalSlice";
+
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
+
+import PlaceAutocompleteField from "./PlaceAutocompleteField";
 
 
 const validationSchema = yup.object({

@@ -9,6 +9,7 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
+import * as yup from 'yup';
 
 import { Comment } from '../../app/features/event/eventSlice';
 
@@ -17,6 +18,11 @@ import Answer from './Answer';
 import CommentActions from './CommentActions';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { updateEventComment } from '../../app/firebase/firebaseService';
+import { useFormik } from 'formik';
+
+const validationSchema = yup.object({
+  text: yup.string().required('Text is required'),
+});
 
 type UserCommentProps = { comment: Comment; eventId: string };
 
@@ -25,7 +31,7 @@ const showTime = (time: number) => {
   const hours = Math.floor(time / (1000 * 60 * 60));
   const minutes = Math.floor(time / (1000 * 60));
 
-  if (minutes < 60 ) return `${minutes} minutes ago`;
+  if (minutes < 60) return `${minutes} minutes ago`;
   if (hours < 24) return `${hours} hours ago`;
   if (days === 1) return `${days} day ago`;
   return `${days} days ago`;
@@ -34,11 +40,11 @@ const showTime = (time: number) => {
 const UserComment = ({ comment, eventId }: UserCommentProps) => {
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
   const [isEditInputVisible, setIsEditInputVisible] = useState(false);
-  const [editInput, setEditInput] = useState(comment.text);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { isAuth, currUser } = useAppSelector((state) => state.auth);
-  const isUserComment = comment.uid === currUser?.uid;
 
+  const { isAuth, currUser } = useAppSelector((state) => state.auth);
+
+  const isUserComment = comment.uid === currUser?.uid;
   const isOpenButtonMenu = Boolean(anchorEl);
 
   const timeAgo = showTime(new Date().getTime() - Number(comment.date));
@@ -50,6 +56,17 @@ const UserComment = ({ comment, eventId }: UserCommentProps) => {
   const handleCloseButtonMenu = () => {
     setAnchorEl(null);
   };
+
+  const { values, handleChange, handleSubmit } = useFormik({
+    initialValues: {
+      text: comment.text,
+    },
+    onSubmit: (values) => {
+      updateEventComment(eventId, comment.id, values.text);
+      setIsEditInputVisible(false);
+    },
+    validationSchema: validationSchema,
+  });
 
   return (
     <>
@@ -82,21 +99,17 @@ const UserComment = ({ comment, eventId }: UserCommentProps) => {
           exit={false}
           timeout={{ enter: 900 }}
         >
-          <Stack spacing={2}>
+          <Stack spacing={2} component='form' onSubmit={handleSubmit}>
             <TextField
+              name='text'
               variant='outlined'
-              value={editInput}
-              onChange={(e) => setEditInput(e.target.value)}
+              onChange={handleChange}
+              value={values.text}
+              error={!Boolean(values.text)}
               multiline
               maxRows={7}
             />
-            <Button
-              variant='contained'
-              onClick={() => {
-                updateEventComment(eventId, comment.id, editInput);
-                setIsEditInputVisible(false);
-              }}
-            >
+            <Button type='submit' variant='contained'>
               Save
             </Button>
           </Stack>
