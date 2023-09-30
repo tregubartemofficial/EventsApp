@@ -234,7 +234,7 @@ export const socialLogin = async (
       dispatch(
         signIn({
           email: profile.email,
-          photoURL: result.user?.photoURL,
+          photoURL: profile.photoURL,
           uid: profile.uid,
           displayName: profile.displayName,
         })
